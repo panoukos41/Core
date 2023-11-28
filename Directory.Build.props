@@ -39,12 +39,7 @@
     <PackageIconUrl></PackageIconUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
 
-    <None Condition="$(MSBuildProjectDirectory.Contains('src'))" Include="$(MSBuildThisFileDirectory)/README.md" Pack="true" PackagePath="/" />
-
-    <!-- Versioning -->
-    <PackageReference Include="Nerdbank.GitVersioning" Version="3.6.133" PrivateAssets="All" />
-    <!-- Sourcelink -->
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+    <!--<None Condition="$(MSBuildProjectDirectory.Contains('src'))" Include="$(MSBuildThisFileDirectory)/README.md" Pack="true" PackagePath="/" />-->
 
     <!-- Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -53,5 +48,12 @@
     <!-- Include PDB in the built .nupkg -->
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
   </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Versioning -->
+    <PackageReference Include="Nerdbank.GitVersioning" Version="3.6.133" PrivateAssets="All" />
+    <!-- Sourcelink -->
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+  </ItemGroup>
 
 </Project>
