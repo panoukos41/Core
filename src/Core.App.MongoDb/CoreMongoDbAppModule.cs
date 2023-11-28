@@ -1,4 +1,4 @@
-﻿using Core.MongoDb.Commons.BsonSerializers;
+﻿using Core.MongoDb.Common.BsonSerializers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 

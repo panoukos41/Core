@@ -1,4 +1,4 @@
-﻿using Core.Commons.Behaviors;
+﻿using Core.Common.Behaviors;
 using FluentValidation;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,7 +20,5 @@ public sealed class CoreAppModule : IAppModule<CoreAppModule>
         services.AddSingleton(typeof(IPipelineBehavior<,>), typeof(ValidBehavior<,>));
         services.AddSingleton(typeof(IPipelineBehavior<,>), typeof(FluentValidationBehavior<,>));
         services.AddSingleton(typeof(IPipelineBehavior<,>), typeof(RunnerBehavior<,>));
-
-
     }
 }

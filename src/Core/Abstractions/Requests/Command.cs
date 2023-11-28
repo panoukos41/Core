@@ -3,11 +3,6 @@ using Mediator;
 
 namespace Core.Abstractions.Requests;
 
-public interface IRequestId
-{
-    Guid RequestId { get; init; }
-}
-
 /// <summary>
 /// Represents a base command.
 /// </summary>
@@ -36,29 +31,5 @@ public abstract record Command<TData, TResult> : Command<TResult>, IValid
     public static IValidator Validator { get; } = InlineValidator.For<Command<TData, TResult>>(data =>
     {
         data.RuleFor(x => x.Data).SetValidator((IValidator<TData>)TData.Validator);
-    });
-}
-
-/// <summary>
-/// Represents a delete command. It accepts a <see cref="Uuid"/> of the resource to delete.
-/// </summary>
-public abstract record DeleteCommand : Command<None>, IValid
-{
-    public Uuid Id { get; }
-
-    protected DeleteCommand(Uuid id)
-    {
-        Id = id;
-    }
-
-    protected DeleteCommand(IEntity model)
-    {
-        Id = model.Id;
-    }
-
-    public static IValidator Validator { get; } = InlineValidator.For<DeleteCommand>(data =>
-    {
-        data.RuleFor(x => x.Id)
-            .NotEmpty();
     });
 }

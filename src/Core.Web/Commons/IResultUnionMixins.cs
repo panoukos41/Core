@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Http;
 
-namespace Core.Commons;
+namespace Core.Common;
 
 public static class IResultUnionMixins
 {

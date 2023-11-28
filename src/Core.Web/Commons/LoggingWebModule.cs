@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Core.Commons;
+namespace Core.Common;
 
 public class LoggingWebModule : LoggerConfiguration, IWebModule<LoggingWebModule>
 {
