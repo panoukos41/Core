@@ -1,0 +1,57 @@
+<Project>
+  <!--Build-->
+  <PropertyGroup>
+    <LangVersion>preview</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>true</ImplicitUsings>
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+    <Configuration Condition="$(Configuration) == ''">Debug</Configuration>
+    <NoWarn>$(NoWarn);IDE0039;IDE0130;IDE0290;IDE0060;RZ10012</NoWarn>
+
+    <ArtifactsPath>$(MSBuildThisFileDirectory)artifacts/default</ArtifactsPath>
+    <ArtifactsPath Condition="$(MSBuildProjectDirectory.Contains('tests'))">$(MSBuildThisFileDirectory)artifacts/tests</ArtifactsPath>
+    <ArtifactsPath Condition="$(MSBuildProjectDirectory.Contains('tools'))">$(MSBuildThisFileDirectory)artifacts/tools</ArtifactsPath>
+    <ArtifactsPath Condition="$(MSBuildProjectDirectory.Contains('samples'))">$(MSBuildThisFileDirectory)artifacts/samples</ArtifactsPath>
+    <ArtifactsPath Condition="$(MSBuildProjectDirectory.Contains('src'))">$(MSBuildThisFileDirectory)artifacts/src</ArtifactsPath>
+    <UseArtifactsOutput>true</UseArtifactsOutput>
+  </PropertyGroup>
+
+  <!-- Repository -->
+  <PropertyGroup>
+    <Authors>Panagiotis Athanasiou</Authors>
+    <Owners>panoukos41</Owners>
+    <Copyright>Copyright (c) 2023 $(Authors)</Copyright>
+    <RepositoryUrl>https://github.com/panoukos41/Core</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryLicense>MIT</RepositoryLicense>
+    <RepositoryDescription></RepositoryDescription>
+    <RepositoryTags></RepositoryTags>
+  </PropertyGroup>
+
+  <!-- Package -->
+  <PropertyGroup>
+    <PackageProjectUrl>$(RepositoryUrl)</PackageProjectUrl>
+    <PackageLicenseExpression>$(RepositoryLicense)</PackageLicenseExpression>
+    <DefaultPackageDescription>$(RepositoryDescription)</DefaultPackageDescription>
+    <PackageDescription>$(RepositoryDescription)</PackageDescription>
+    <PackageTags>$(RepositoryTags)</PackageTags>
+    <PackageReleaseNotes>$(RepositoryUrl)/releases</PackageReleaseNotes>
+    <PackageIconUrl></PackageIconUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+
+    <None Condition="$(MSBuildProjectDirectory.Contains('src'))" Include="$(MSBuildThisFileDirectory)/README.md" Pack="true" PackagePath="/" />
+
+    <!-- Versioning -->
+    <PackageReference Include="Nerdbank.GitVersioning" Version="3.6.133" PrivateAssets="All" />
+    <!-- Sourcelink -->
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+
+    <!-- Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <!-- Embed source files that are not tracked by the source control manager in the PDB -->
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <!-- Include PDB in the built .nupkg -->
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+  </PropertyGroup>
+
+</Project>
