@@ -1,7 +1,4 @@
-﻿using FluentValidation;
-using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Core;
@@ -17,22 +14,20 @@ public static class Options
         Converters = { new ResultJsonConverter() }
     };
 
-    public static void Merge(this JsonSerializerOptions options, JsonSerializerOptions other)
+    public static void Apply(JsonSerializerOptions options)
     {
-        options.PropertyNamingPolicy = other.PropertyNamingPolicy;
-        options.PropertyNameCaseInsensitive = other.PropertyNameCaseInsensitive;
-        options.DefaultIgnoreCondition = other.DefaultIgnoreCondition;
-        options.ReferenceHandler = other.ReferenceHandler;
-        foreach (var converter in other.Converters.Except(options.Converters))
+        options.PropertyNamingPolicy = Json.PropertyNamingPolicy;
+        options.PropertyNameCaseInsensitive = Json.PropertyNameCaseInsensitive;
+        options.DefaultIgnoreCondition = Json.DefaultIgnoreCondition;
+        options.ReferenceHandler = Json.ReferenceHandler;
+        foreach (var converter in Json.Converters.Except(options.Converters))
         {
             options.Converters.Add(converter);
         }
     }
 
-    [ModuleInitializer]
-    [SuppressMessage("Usage", "CA2255:The 'ModuleInitializer' attribute should not be used in libraries", Justification = "<Pending>")]
-    internal static void Initializer()
+    public static void Replace(ref JsonSerializerOptions options)
     {
-        ValidatorOptions.Global.DefaultRuleLevelCascadeMode = CascadeMode.Stop;
+        options = Json;
     }
 }
