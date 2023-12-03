@@ -8,7 +8,10 @@ namespace Core;
 /// <summary>
 /// A format similar to ProblemDetails with some extras.
 /// </summary>
-/// <remarks>Two problems are equal if they have the same type.</remarks>
+/// <remarks>
+/// Two problems are equal if they have the same <see cref="Type"/>.
+/// The <see cref="Type"/> is used for the <see cref="GetHashCode"/> method too.
+/// </remarks>
 [DebuggerDisplay("{Type} ({Status})\n{Title}:{Detail}")]
 public sealed record Problem
 {
@@ -52,7 +55,7 @@ public sealed record Problem
     /// Test whether the <see cref="Exception"/> or <see cref="Type"/> property is equal to <typeparamref name="TException"/>.
     /// </summary>
     /// <typeparam name="TException">The type of exception to check for.</typeparam>
-    /// <remarks>Type will be tested against the name with no namespace.</remarks>
+    /// <remarks>Type will be tested against <see cref="Exception"/> or the type name with no namespace.</remarks>
     public bool Is<TException>() => Exception is TException || typeof(TException).Name.Equals(Type, StringComparison.Ordinal);
 
     public Problem()
@@ -89,7 +92,7 @@ public sealed record Problem
     /// <inheritdoc/>
     public override int GetHashCode()
     {
-        return Type.GetHashCode();
+        return HashCode.Combine(Type);
     }
 
     public static implicit operator Problem(Exception ex) => new(ex);

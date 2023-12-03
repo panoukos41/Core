@@ -6,6 +6,13 @@ namespace Core;
 
 public static class Problems
 {
+    public static Problem BadRequest { get; } = new()
+    {
+        Type = nameof(BadRequest),
+        Title = nameof(BadRequest),
+        Status = 400,
+    };
+
     public static Problem Validation { get; } = new()
     {
         Type = nameof(Validation),
@@ -60,13 +67,11 @@ public static class Problems
 
 public static class ProblemMixins
 {
-    public static Problem WithValidationErrors(this Problem validation, List<ValidationFailure> failures)
-    {
-        return WithMetadata(validation, "ValidationErrors", failures);
-    }
-
     public static Problem WithMetadata<TMetadata>(this Problem problem, string key, TMetadata metadata)
     {
+        if (metadata is null)
+            return problem;
+
         var newProblem = problem with { Metadata = [] };
         newProblem.Metadata[key] = JsonSerializer.SerializeToNode(metadata, Options.Json);
         return newProblem;
@@ -78,7 +83,9 @@ public static class ProblemMixins
             return problem;
 
         var newProblem = problem with { Metadata = [] };
-        newProblem.Metadata.CopyFrom(metadata);
+        newProblem.Metadata
+            .CopyFrom(problem?.Metadata)
+            .CopyFrom(metadata);
         return newProblem;
     }
 
@@ -90,7 +97,19 @@ public static class ProblemMixins
         var newProblem = problem with { Metadata = [] };
         var jElement = JsonSerializer.SerializeToElement(metadata, Options.Json);
         var jObject = JsonObject.Create(jElement);
-        newProblem.Metadata.CopyFrom(jObject!);
+        newProblem.Metadata
+            .CopyFrom(problem?.Metadata)
+            .CopyFrom(jObject);
         return newProblem;
+    }
+
+    public static Problem WithValidationErrors(this Problem problem, List<ValidationFailure> failures)
+    {
+        return WithMetadata(problem, "ValidationFailures", failures);
+    }
+
+    public static ValidationFailure[]? GetValidationFailures(this Problem problem)
+    {
+        return problem.Metadata?.GetArray<ValidationFailure>("ValidationFailures");
     }
 }

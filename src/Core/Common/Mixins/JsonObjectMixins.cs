@@ -7,17 +7,35 @@ namespace System.Text.Json;
 
 public static class JsonObjectMixins
 {
-    public static JsonObject CopyFrom(this JsonObject obj, JsonObject other)
+    /// <summary>
+    /// Copy keys from <paramref name="other"/> to <paramref name="obj"/> and return it.
+    /// </summary>
+    /// <param name="obj">The object to copy to.</param>
+    /// <param name="other">The object to copy from.</param>
+    /// <returns>The same obj that values were copied to.</returns>
+    public static JsonObject CopyFrom(this JsonObject obj, JsonObject? other, bool deepClone = false)
     {
+        if (other is not { Count: > 1 }) return obj;
+
         foreach (var (key, node) in other)
         {
-            obj[key] = node;
+            if (node is null) continue;
+
+            obj[key] = deepClone ? node.DeepClone() : node;
         }
         return obj;
     }
 
-    public static JsonObject CopyFrom(this JsonObject obj, IDictionary<string, JsonElement> other)
+    /// <summary>
+    /// Copy keys from <paramref name="other"/> to <paramref name="obj"/> and return it.
+    /// </summary>
+    /// <param name="obj">The object to copy to.</param>
+    /// <param name="other">The dictionary to copy from.</param>
+    /// <returns>The same obj that values were copied to.</returns>
+    public static JsonObject CopyFrom(this JsonObject obj, IDictionary<string, JsonElement>? other)
     {
+        if (other is not { Count: > 1 }) return obj;
+
         foreach (var (key, element) in other)
         {
             obj[key] = element.ValueKind switch
@@ -47,5 +65,20 @@ public static class JsonObjectMixins
             obj[key] = JsonSerializer.SerializeToNode(value, Options.Json);
 
         return obj;
+    }
+
+    public static T[]? GetArray<T>(this JsonObject? obj, string key)
+    {
+        if (obj is null ||
+            obj.TryGetPropertyValue(key, out var property) is false ||
+            property is null)
+        {
+            return default;
+        }
+        return property.GetValueKind() switch
+        {
+            JsonValueKind.Array => property.Deserialize<T[]>(),
+            _ => default
+        };
     }
 }
