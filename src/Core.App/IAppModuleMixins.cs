@@ -23,7 +23,7 @@ public static class IAppModuleMixins
     }
 
     public static void ValidateAndThrow<TAppModule>(this TAppModule module)
-        where TAppModule : class, IAppModule<TAppModule>, IValid, new()
+        where TAppModule : class, IAppModule<TAppModule>, IValid<TAppModule>, new()
     {
         var ctx = new ValidationContext<TAppModule>(module);
         var result = TAppModule.Validator.Validate(ctx);

@@ -48,7 +48,7 @@ public static class IWebModuleMixins
     }
 
     public static void ValidateAndThrow<TWebModule>(this TWebModule module)
-        where TWebModule : class, IWebModule<TWebModule>, IValid, new()
+        where TWebModule : class, IWebModule<TWebModule>, IValid<TWebModule>, new()
     {
         var ctx = new ValidationContext<TWebModule>(module);
         var result = TWebModule.Validator.Validate(ctx);

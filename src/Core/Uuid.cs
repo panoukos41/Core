@@ -6,12 +6,14 @@ using System.Text.Json.Serialization;
 
 namespace Core;
 
+/// <summary>
+/// Represents a universally unique identifier using <see href="https://github.com/codeyu/nanoid-net">NanoId</see>.
+/// A <see cref="Uuid"/> can be between 11 and 32 characters.
+/// </summary>
 [JsonConverter(typeof(UuidJsonConverter))]
 [DebuggerDisplay("{nanoId}")]
 public readonly struct Uuid :
     IParsable<Uuid>,
-    //ISpanParsable<Uuid>,
-    //IUtf8SpanParsable<Uuid>,
     IEquatable<Uuid>,
     IEquatable<Uuid?>
 {
@@ -33,9 +35,15 @@ public readonly struct Uuid :
     /// Get a new <see cref="Uuid"/> with the default <paramref name="size"/> of 11.
     /// </summary>
     /// <param name="size">The size of the id.</param>
+    /// <remarks>Size has to be between 11 and 32 characters.</remarks>
     /// <returns>A new <see cref="Uuid"/>.</returns>
     public static Uuid NewUuid(int size = 11)
     {
+        if (size < 11)
+            throw new ArgumentOutOfRangeException(nameof(size), "Uuid can't be less than 11 characters.");
+        if (size > 32)
+            throw new ArgumentOutOfRangeException(nameof(size), "Uuid can't be more than 32 characters.");
+
         return new(Nanoid.Generate(size: size));
     }
 
@@ -46,32 +54,33 @@ public readonly struct Uuid :
 
     #region IParsable
 
-    public static Uuid Parse(string s) => Parse(s, null);
-
     public static Uuid Parse(string s, IFormatProvider? provider)
     {
         if (string.IsNullOrWhiteSpace(s))
-            throw new ArgumentException("Uuid can't be null empty or whitespace.", nameof(s));
+            throw new ArgumentException("Uuid can't be null, empty or whitespace.", nameof(s));
+        if (s.Length < 11)
+            throw new ArgumentOutOfRangeException(nameof(s), "Uuid can't be less than 11 characters.");
+        if (s.Length > 32)
+            throw new ArgumentOutOfRangeException(nameof(s), "Uuid can't be more than 32 characters.");
 
         return new Uuid(s);
     }
 
-    public static bool TryParse([NotNullWhen(true)] string? s, [MaybeNullWhen(false)] out Uuid result) => TryParse(s, null, out result);
-
     public static bool TryParse([NotNullWhen(true)] string? s, IFormatProvider? provider, [MaybeNullWhen(false)] out Uuid result)
     {
         result = Empty;
-        if (s is null) return false;
-        try
-        {
-            result = Parse(s, provider);
-            return true;
-        }
-        catch
-        {
+        if (s is not { Length: >= 11 or <= 32 })
             return false;
-        }
+
+        result = Parse(s, provider);
+        return true;
     }
+
+    public static Uuid Parse(string s)
+        => Parse(s, null);
+
+    public static bool TryParse([NotNullWhen(true)] string? s, [MaybeNullWhen(false)] out Uuid result)
+        => TryParse(s, null, out result);
 
     #endregion
 
@@ -92,8 +101,6 @@ public readonly struct Uuid :
     #endregion
 
     public static implicit operator string(Uuid value) => value.nanoId;
-
-    public static explicit operator Uuid(string value) => new(value);
 }
 
 // MIT License
@@ -120,29 +127,11 @@ public readonly struct Uuid :
 
 file static class Nanoid
 {
-    //private const string DefaultAlphabet = "_-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    private const string DefaultAlphabet = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    // "_-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+    // Must contain between 1 and 255 symbols.
+    private const string alphabet = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private static readonly CryptoRandom Random = new();
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="alphabet"></param>
-    /// <param name="size"></param>
-    /// <returns></returns>
-    public static ValueTask<string> GenerateAsync(string alphabet = DefaultAlphabet, int size = 21)
-        => new(Generate(Random, alphabet, size));
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="alphabet"></param>
-    /// <param name="size"></param>
-    /// <returns></returns>
-    //public static string Generate(string alphabet = DefaultAlphabet, int size = 21)
-    //    => Generate(Random, alphabet, size);
-    public static string Generate(string alphabet = DefaultAlphabet, int size = 21)
-        => Generate(Random, alphabet, size);
 
     /// <summary>
     /// 
@@ -153,23 +142,8 @@ file static class Nanoid
     /// <returns></returns>
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="ArgumentOutOfRangeException"></exception>
-    public static string Generate(Random random, string? alphabet = DefaultAlphabet, int size = 21)
+    public static string Generate(int size = 21)
     {
-        if (random == null)
-        {
-            ArgumentNullException.ThrowIfNull(random);
-        }
-
-        if (alphabet == null)
-        {
-            ArgumentException.ThrowIfNullOrEmpty(alphabet);
-        }
-
-        if (alphabet.Length <= 0 || alphabet.Length >= 256)
-        {
-            throw new ArgumentOutOfRangeException(nameof(alphabet), "alphabet must contain between 1 and 255 symbols.");
-        }
-
         if (size <= 0)
         {
             throw new ArgumentOutOfRangeException(nameof(size), "size must be greater than zero.");
@@ -186,14 +160,14 @@ file static class Nanoid
         int cnt = 0;
         while (true)
         {
-            random.NextBytes(bytes);
+            Random.NextBytes(bytes);
 
             for (var i = 0; i < step; i++)
             {
-
                 var alphabetIndex = bytes[i] & mask;
 
                 if (alphabetIndex >= alphabet.Length) continue;
+
                 idBuilder[cnt] = alphabet[alphabetIndex];
                 if (++cnt == size)
                 {

@@ -178,7 +178,7 @@ public abstract class RxObject :
     /// <param name="newValue">The value to replace the backing field with.</param>
     /// <param name="propertyName">Optionally the name of the property that changed.</param>
     protected void SetValidateAndRaise<T>(ref T backingField, T newValue, [CallerMemberName] string? propertyName = null)
-       where T : class, IValid
+       where T : class, IValid<T>
     {
         ArgumentNullException.ThrowIfNull(propertyName);
 
@@ -200,7 +200,7 @@ public abstract class RxObject :
     /// <param name="newValue">The value to replace the backing field with.</param>
     /// <param name="properties">The names of the properties that changed.</param>
     protected void SetValidateAndRaise<T>(ref T backingField, T newValue, params string[] properties)
-        where T : class, IValid
+        where T : class, IValid<T>
     {
         if (properties is not { Length: > 0 })
         {

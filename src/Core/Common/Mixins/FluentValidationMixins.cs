@@ -1,18 +1,9 @@
-﻿using Core;
-using Core.Primitives;
+﻿using Core.Abstractions;
 
 namespace FluentValidation;
 
 public static class FluentValidationMixins
 {
-    public static IRuleBuilder<T, Uuid> Uuid<T>(this IRuleBuilder<T, Uuid> builder)
-        => builder
-        .NotEmpty();
-
-    public static IRuleBuilder<T, Guid> Guid<T>(this IRuleBuilder<T, Guid> builder)
-        => builder
-        .NotEmpty();
-
     public static IRuleBuilder<T, string> Email<T>(this IRuleBuilder<T, string> builder)
         => builder
         .NotEmpty()
@@ -26,8 +17,7 @@ public static class FluentValidationMixins
         .MinimumLength(10)
         .WithName("Password");
 
-    public static IRuleBuilder<T, Phone> Phone<T>(this IRuleBuilder<T, Phone> builder)
-        => builder
-        .NotEmpty()
-        .WithName("Phone");
+    public static IRuleBuilder<T, TValid> Valid<T, TValid>(this IRuleBuilder<T, TValid> builder)
+        where TValid : IValid<TValid>
+        => builder.SetValidator(TValid.Validator);
 }

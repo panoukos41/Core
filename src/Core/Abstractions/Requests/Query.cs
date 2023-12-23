@@ -26,7 +26,7 @@ public abstract record ListQuery<TResult> : IQuery<Result<TResult>> where TResul
 /// Represents a <see cref="Query{TResult}"/> that will search by Id.
 /// </summary>
 /// <typeparam name="TResult">The type of the result object.</typeparam>
-public abstract record FindQuery<TResult> : Query<TResult>, IValid where TResult : notnull
+public abstract record FindQuery<TResult> : Query<TResult>, IValid<FindQuery<TResult>> where TResult : notnull
 {
     public Uuid Id { get; }
 
@@ -35,7 +35,7 @@ public abstract record FindQuery<TResult> : Query<TResult>, IValid where TResult
         Id = id;
     }
 
-    public static IValidator Validator { get; } = InlineValidator.For<FindQuery<TResult>>(data =>
+    public static IValidator<FindQuery<TResult>> Validator { get; } = InlineValidator.For<FindQuery<TResult>>(data =>
     {
         data.RuleFor(x => x.Id)
             .NotEmpty();

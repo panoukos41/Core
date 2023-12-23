@@ -3,7 +3,11 @@ using FluentValidation;
 
 namespace Core.Primitives;
 
-public sealed record Address : IValid
+public readonly record struct Address :
+    IEmpty<Address>,
+    IValid<Address>,
+    IEquatable<Address>,
+    IEquatable<Address?>
 {
     public required string Street { get; init; }
 
@@ -17,6 +21,16 @@ public sealed record Address : IValid
 
     public required Location Location { get; init; }
 
+    public bool Equals(Address? other)
+    {
+        return other is { } && GetHashCode() == other.GetHashCode();
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Street, Region, ZipCode, City, Country, Location);
+    }
+
     public static Address Empty { get; } = new()
     {
         Street = string.Empty,
@@ -27,20 +41,7 @@ public sealed record Address : IValid
         Location = Location.Empty
     };
 
-    public static IValidator Validator { get; } = InlineValidator.For<Address>(data =>
+    public static IValidator<Address> Validator { get; } = InlineValidator.For<Address>(data =>
     {
     });
-
-
-    public bool Equals(Address? other)
-    {
-        return other is { } && GetHashCode() == other.GetHashCode();
-    }
-
-    public override int GetHashCode()
-    {
-        var hash1 = HashCode.Combine(Street, Region, ZipCode);
-        var hash2 = HashCode.Combine(City, Country, Location);
-        return HashCode.Combine(hash1, hash2);
-    }
 }

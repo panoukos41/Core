@@ -4,7 +4,11 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Core.Primitives;
 
-public sealed record Location : IValid
+public readonly record struct Location :
+    IEmpty<Location>,
+    IValid<Location>,
+    IEquatable<Location>,
+    IEquatable<Location?>
 {
     public required double Latitude { get; init; }
 
@@ -21,9 +25,30 @@ public sealed record Location : IValid
         Longitude = longitude;
     }
 
-    public static Location Empty { get; } = new(0, 0);
+    public bool Equals(Location? other)
+    {
+        return other is { }
+            && Latitude == other.Value.Latitude
+            && Longitude == other.Value.Longitude;
+    }
 
-    public static IValidator Validator { get; } = InlineValidator.For<Location>(data =>
+    public override string ToString()
+    {
+        return $"{Latitude}, {Longitude}";
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Latitude, Longitude);
+    }
+
+    public static Location Empty { get; } = new()
+    {
+        Latitude = 0,
+        Longitude = 0
+    };
+
+    public static IValidator<Location> Validator { get; } = InlineValidator.For<Location>(data =>
     {
         data.RuleFor(x => x.Latitude)
             .InclusiveBetween(-90, 90);
@@ -31,16 +56,4 @@ public sealed record Location : IValid
         data.RuleFor(x => x.Longitude)
             .InclusiveBetween(-180, 180);
     });
-
-    public bool Equals(Location? other)
-    {
-        return other is { }
-            && Latitude == other.Latitude
-            && Longitude == other.Longitude;
-    }
-
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(Latitude, Longitude);
-    }
 }

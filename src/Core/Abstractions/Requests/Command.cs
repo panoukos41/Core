@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using Mediator;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Core.Abstractions.Requests;
 
@@ -14,15 +15,20 @@ public abstract record Command<TResult> : ICommand<Result<TResult>>, IRequestId
 }
 
 /// <summary>
-/// Represents a <see cref="Command{TResult}"/> with <see cref="IValid"/> data.
+/// Represents a <see cref="Command{TResult}"/> with <see cref="IValid{TSelf}"/> data.
 /// </summary>
 /// <typeparam name="TData">The type of the data.</typeparam>
 public abstract record Command<TData, TResult> : Command<TResult>, IValid
-    where TData : notnull, IValid
+    where TData : notnull, IValid<TData>
     where TResult : notnull
 {
-    public TData Data { get; }
+    public required TData Data { get; init; }
 
+    public Command()
+    {
+    }
+
+    [SetsRequiredMembers]
     protected Command(TData data)
     {
         Data = data;
@@ -30,6 +36,30 @@ public abstract record Command<TData, TResult> : Command<TResult>, IValid
 
     public static IValidator Validator { get; } = InlineValidator.For<Command<TData, TResult>>(data =>
     {
-        data.RuleFor(x => x.Data).SetValidator((IValidator<TData>)TData.Validator);
+        data.RuleFor(x => x.Data).Valid();
+    });
+}
+
+/// <summary>
+/// Represents a delete command. It accepts a <see cref="Uuid"/> of the resource to delete.
+/// </summary>
+public abstract record DeleteCommand : Command<None>, IValid<DeleteCommand>
+{
+    public Uuid Id { get; }
+
+    protected DeleteCommand(Uuid id)
+    {
+        Id = id;
+    }
+
+    protected DeleteCommand(IEntity model)
+    {
+        Id = model.Id;
+    }
+
+    public static IValidator<DeleteCommand> Validator { get; } = InlineValidator.For<DeleteCommand>(data =>
+    {
+        data.RuleFor(x => x.Id)
+            .NotEmpty();
     });
 }

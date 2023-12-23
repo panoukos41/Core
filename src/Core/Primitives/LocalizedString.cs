@@ -2,10 +2,12 @@
 
 /// <summary>
 /// A dictionary implementation to store multiple localized string.
-/// Use <see cref="string.Empty"/> to set the default value.
+/// Use <see cref="DefaultKey"/> to set the default value.
 /// </summary>
 public sealed class LocalizedString : Dictionary<string, string>, IEquatable<Dictionary<string, string>>, IEquatable<LocalizedString>
 {
+    public const string DefaultKey = "-";
+
     /// <summary>
     /// Gets or sets the default value.
     /// If the value is null then the key is removed.
@@ -13,8 +15,8 @@ public sealed class LocalizedString : Dictionary<string, string>, IEquatable<Dic
     /// </summary>
     public string? Default
     {
-        get => this[string.Empty];
-        set => this[string.Empty] = value;
+        get => this[DefaultKey];
+        set => this[DefaultKey] = value;
     }
 
     /// <summary>
