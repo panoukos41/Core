@@ -6,7 +6,7 @@
     <ImplicitUsings>true</ImplicitUsings>
     <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
     <Configuration Condition="$(Configuration) == ''">Debug</Configuration>
-    <NoWarn>$(NoWarn);IDE0039;IDE0130;IDE0290;IDE0060;RZ10012</NoWarn>
+    <NoWarn>$(NoWarn);IDE0039;IDE0130;IDE0290;IDE0060;IDE0011;RZ10012</NoWarn>
 
     <ArtifactsPath>$(MSBuildThisFileDirectory)artifacts/default</ArtifactsPath>
     <ArtifactsPath Condition="$(MSBuildProjectDirectory.Contains('tests'))">$(MSBuildThisFileDirectory)artifacts/tests</ArtifactsPath>
