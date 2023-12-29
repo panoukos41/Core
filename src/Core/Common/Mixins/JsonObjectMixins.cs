@@ -1,9 +1,10 @@
 ﻿using Core;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 
-namespace System.Text.Json;
+namespace System;
 
 public static class JsonObjectMixins
 {
@@ -65,6 +66,23 @@ public static class JsonObjectMixins
             obj[key] = JsonSerializer.SerializeToNode(value, Options.Json);
 
         return obj;
+    }
+
+    public static T? Get<T>(this JsonObject? obj, string key)
+    {
+        if (obj is null) return default;
+
+        if (!obj.TryGetPropertyValue(key, out var value))
+            return default;
+
+        return value.Deserialize<T>();
+    }
+
+    public static void Set<T>(this JsonObject? obj, string key, T value)
+    {
+        if (obj is null) return;
+
+        obj[key] = JsonSerializer.SerializeToNode(value, Options.Json);
     }
 
     public static T[]? GetArray<T>(this JsonObject? obj, string key)
