@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using Mediator;
 using System.Diagnostics.CodeAnalysis;
+using System.Text.Json.Serialization;
 
 namespace Core.Abstractions.Requests;
 
@@ -11,6 +12,7 @@ namespace Core.Abstractions.Requests;
 public abstract record Command<TResult> : ICommand<Result<TResult>>, IRequestId
     where TResult : notnull
 {
+    [JsonPropertyOrder(0)]
     public Guid RequestId { get; init; } = Guid.NewGuid();
 }
 
@@ -22,6 +24,7 @@ public abstract record Command<TData, TResult> : Command<TResult>, IValid
     where TData : notnull, IValid<TData>
     where TResult : notnull
 {
+    [JsonPropertyOrder(100)]
     public required TData Data { get; init; }
 
     public Command()
