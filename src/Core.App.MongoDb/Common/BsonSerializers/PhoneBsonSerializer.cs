@@ -4,13 +4,13 @@ using MongoDB.Bson.Serialization.Serializers;
 
 namespace Core.MongoDb.Common.BsonSerializers;
 
-public sealed class PhoneBsonSerializer : SerializerBase<Phone>, IBsonSerializationProvider
+public sealed class PhoneBsonSerializer :
+    SerializerBase<Phone>,
+    IBsonSerializationProvider
 {
     private static readonly Type type = typeof(Phone);
 
     private static PhoneBsonSerializer Provider { get; } = new();
-
-    // todo: Look into IBsonDocumentSerializer
 
     public static void RegisterProvider()
     {

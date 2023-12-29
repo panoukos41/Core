@@ -3,7 +3,9 @@ using MongoDB.Bson.Serialization.Serializers;
 
 namespace Core.MongoDb.Common.BsonSerializers;
 
-public sealed class UuidBsonSerializer : SerializerBase<Uuid>, IBsonSerializationProvider
+public sealed class UuidBsonSerializer :
+    SerializerBase<Uuid>,
+    IBsonSerializationProvider
 {
     private static readonly Type type = typeof(Uuid);
 
