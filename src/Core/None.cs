@@ -11,7 +11,8 @@ using System.Threading.Tasks;
 /// Represents a void type, since <see cref="void"/> is not a valid return type in C#.
 /// </summary>
 [JsonConverter(typeof(NoneJsonConverter))]
-public readonly struct None :
+//public readonly struct None :
+public class None :
     IEquatable<None>,
     IEquatable<None?>,
     IComparable<None>,
@@ -42,14 +43,14 @@ public readonly struct None :
     /// </returns>
     public override bool Equals(object? obj) => obj is None;
 
-    /// <summary>
-    /// Determines whether the current object is equal to another object of the same type.
-    /// </summary>
-    /// <param name="other">An object to compare with this object.</param>
-    /// <returns>
-    /// <c>true</c> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <c>false</c>.
-    /// </returns>
-    public bool Equals(None other) => true;
+    ///// <summary>
+    ///// Determines whether the current object is equal to another object of the same type.
+    ///// </summary>
+    ///// <param name="other">An object to compare with this object.</param>
+    ///// <returns>
+    ///// <c>true</c> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <c>false</c>.
+    ///// </returns>
+    //public bool Equals(None other) => true;
 
     /// <summary>
     /// Determines whether the current object is equal to another object of the same type.
@@ -60,8 +61,8 @@ public readonly struct None :
     /// </returns>
     public bool Equals(None? other) => other is { };
 
-    /// <inheritdoc/>
-    public int CompareTo(None other) => 0;
+    ///// <inheritdoc/>
+    //public int CompareTo(None other) => 0;
 
     /// <inheritdoc/>
     public int CompareTo(None? other) => other is { } ? 0 : -1;
@@ -95,18 +96,18 @@ public readonly struct None :
 
     /// <inheritdoc/>
     public static implicit operator ValueTask(None? @void) => System.Threading.Tasks.ValueTask.CompletedTask;
+}
 
-    private sealed class NoneJsonConverter : JsonConverter<None>
+file sealed class NoneJsonConverter : JsonConverter<None>
+{
+    public override None Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        public override None Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        {
-            return Value;
-        }
+        return None.Value;
+    }
 
-        public override void Write(Utf8JsonWriter writer, None value, JsonSerializerOptions options)
-        {
-            writer.WriteStartObject();
-            writer.WriteEndObject();
-        }
+    public override void Write(Utf8JsonWriter writer, None value, JsonSerializerOptions options)
+    {
+        writer.WriteStartObject();
+        writer.WriteEndObject();
     }
 }
