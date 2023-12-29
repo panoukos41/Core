@@ -94,7 +94,7 @@ public readonly struct Uuid :
 
     public override int GetHashCode() => nanoId.GetHashCode();
 
-    public static bool operator ==(Uuid left, Uuid right) => left.nanoId != right.nanoId;
+    public static bool operator ==(Uuid left, Uuid right) => left.nanoId == right.nanoId;
 
     public static bool operator !=(Uuid left, Uuid right) => left.nanoId != right.nanoId;
 
