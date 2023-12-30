@@ -7,15 +7,15 @@ public sealed class RunnerBehavior<TRequest, TResponse> : IPipelineBehavior<TReq
     where TRequest : IMessage
     where TResponse : IResultUnion
 {
-    private readonly IEventHandler<RequestSucceededEvent>[] successEventHandlers;
-    private readonly IEventHandler<RequestFailedEvent>[] failedEventHandlers;
+    private readonly IEnumerable<IEventHandler<RequestSucceededEvent>> successEventHandlers;
+    private readonly IEnumerable<IEventHandler<RequestFailedEvent>> failedEventHandlers;
 
     public RunnerBehavior(
         IEnumerable<IEventHandler<RequestSucceededEvent>> successEventHandlers,
         IEnumerable<IEventHandler<RequestFailedEvent>> failedEventHandlers)
     {
-        this.successEventHandlers = [.. successEventHandlers];
-        this.failedEventHandlers = [.. failedEventHandlers];
+        this.successEventHandlers = successEventHandlers;
+        this.failedEventHandlers = failedEventHandlers;
     }
 
     public async ValueTask<TResponse> Handle(TRequest request, CancellationToken cancellationToken, MessageHandlerDelegate<TRequest, TResponse> next)
@@ -42,33 +42,29 @@ public sealed class RunnerBehavior<TRequest, TResponse> : IPipelineBehavior<TReq
         var logger = Log.ForContext<TRequest>();
         var template = request switch
         {
-            IBaseQuery => "Query {Name}, {Problem}",
-            IBaseCommand => "Command {Name}, {Problem}",
-            _ => "RQST {Name}, {Problem}"
+            IBaseQuery => "Problem for Query {Name}, {Type} {Title} {Status} {Detail}",
+            IBaseCommand => "Problem for Command {Name}, {Type} {Title} {Status} {Detail}",
+            _ => "Problem for RQST {Name}, {Type} {Title} {Status} {Detail}"
         };
-        logger.Error(template, request.GetType().Name, problem);
-        PublishRequestFailed(request);
+        logger.Error(problem.Exception, template, request.GetType().Name, problem.Type, problem.Title, problem.Status, problem.Detail);
+        PublishRequestFailed(request, problem);
     }
 
     private void PublishRequestSuccess(TRequest request)
     {
         var @event = new RequestSucceededEvent(request);
-        // todo: try set UserClaims
         foreach (var h in successEventHandlers)
         {
-            // todo: Add logger on exception.
-            h.Handle(@event, default).FireAndForget();
+            h.Handle(@event, default).FireAndForget(static ex => Log.ForContext<RequestSucceededEvent>().Error(ex, "Error on EventHandler"));
         }
     }
 
-    private void PublishRequestFailed(TRequest request)
+    private void PublishRequestFailed(TRequest request, Problem problem)
     {
-        var @event = new RequestFailedEvent(request);
-        // todo: try set UserClaims
+        var @event = new RequestFailedEvent(request, problem);
         foreach (var h in failedEventHandlers)
         {
-            // todo: Add logger on exception.
-            h.Handle(@event, default).FireAndForget();
+            h.Handle(@event, default).FireAndForget(static ex => Log.ForContext<RequestFailedEvent>().Error(ex, "Error on EventHandler"));
         }
     }
 }

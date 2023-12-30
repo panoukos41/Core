@@ -13,16 +13,7 @@ public static class IWebModuleMixins
         var services = builder.Services;
         var configuration = builder.Configuration;
 
-        var count = services.Count;
-        var module = new TAppModule();
-        services.TryAddSingleton(module);
-
-        if (count == services.Count) return;
-
-        configure?.Invoke(module);
-        TAppModule.Add(services, configuration, module);
-
-        Log.ForContext<TAppModule>().Debug("Added AppModule: {AppModule}", typeof(TAppModule).Name);
+        services.AddAppModule(configuration, configure);
     }
 
     public static void AddWebModule<TWebModule>(this WebApplicationBuilder builder, Action<TWebModule>? configure = null)

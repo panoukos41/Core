@@ -14,6 +14,11 @@ public class RequestFailedEvent
     public IMessage Request { get; }
 
     /// <summary>
+    /// The problem this request generated.
+    /// </summary>
+    public Problem Problem { get; }
+
+    /// <summary>
     /// Gets or sets a key/value collection that can be used to share data within the scope of this event.
     /// </summary>
     public IDictionary<object, object?> Items { get; } = new Dictionary<object, object?>();
@@ -22,8 +27,10 @@ public class RequestFailedEvent
     /// Initializes a new instance of <see cref="RequestSucceededEvent"/> for the current request.
     /// </summary>
     /// <param name="request">The request this event is initialized for.</param>
-    public RequestFailedEvent(IMessage request)
+    /// <param name="problem">The problem the request generated.</param>
+    public RequestFailedEvent(IMessage request, Problem problem)
     {
         Request = request;
+        Problem = problem;
     }
 }
