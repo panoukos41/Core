@@ -15,7 +15,7 @@ public abstract record Query<TResult> : IQuery<Result<TResult>> where TResult : 
 /// Represents a list query request.
 /// </summary>
 /// <typeparam name="TResult">The type of the result object.</typeparam>
-public abstract record ListQuery<TResult> : IQuery<Result<TResult>> where TResult : notnull
+public abstract record ListQuery<TResult> : Query<TResult> where TResult : notnull
 {
     public int? Page { get; set; }
 
