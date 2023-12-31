@@ -120,7 +120,7 @@ public sealed class MongoCollectionContext<TDocument> : MongoCollectionBase<TDoc
         return collection.FindOneAndDeleteAsync(filter, options, cancellationToken);
     }
 
-    public override Task<TProjection> FindOneAndReplaceAsync<TProjection>(FilterDefinition<TDocument> filter, TDocument? replacement, FindOneAndReplaceOptions<TDocument, TProjection>? options = null, CancellationToken cancellationToken = default)
+    public override Task<TProjection> FindOneAndReplaceAsync<TProjection>(FilterDefinition<TDocument> filter, TDocument replacement, FindOneAndReplaceOptions<TDocument, TProjection>? options = null, CancellationToken cancellationToken = default)
     {
         return collection.FindOneAndReplaceAsync(filter, replacement, options, cancellationToken);
     }
