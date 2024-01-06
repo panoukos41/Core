@@ -40,6 +40,7 @@ public sealed class JsonObjectSerializer :
 
     public override void Serialize(BsonSerializationContext context, BsonSerializationArgs args, JsonObject value)
     {
-        BsonDocumentSerializer.Instance.Serialize(context, args, BsonDocument.Parse(value.ToJsonString()));
+        var doc = value.Count is 0 ? [] : BsonDocument.Parse(value.ToJsonString());
+        BsonDocumentSerializer.Instance.Serialize(context, args, doc);
     }
 }
