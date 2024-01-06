@@ -18,7 +18,7 @@ public struct Phone : ISpanParsable<Phone>, IEquatable<Phone>, IEquatable<Phone?
 
     public required string Number { get; init; }
 
-    public string Formatted => _formatted ??= $"{CallingCode} {Number}";
+    public string Formatted => _formatted ??= string.Join(' ', CallingCode, Number);
 
     [SetsRequiredMembers]
     public Phone(string callingCode, string number)
@@ -39,7 +39,7 @@ public struct Phone : ISpanParsable<Phone>, IEquatable<Phone>, IEquatable<Phone?
         var separatorIndex = s.IndexOfAny(separatorSearch);
         if (separatorIndex == -1) return false;
 
-        var hasPlus = s.StartsWith("+");
+        var hasPlus = s.StartsWith(['+']);
         result = new Phone
         {
             CallingCode = $"{(hasPlus ? null : '+')}{s[..separatorIndex]}",
