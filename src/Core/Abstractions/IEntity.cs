@@ -2,5 +2,5 @@
 
 public interface IEntity
 {
-    Uuid Id { get; init; }
+    Uuid Id { get; }
 }

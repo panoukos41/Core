@@ -17,6 +17,12 @@ public static class FluentValidationMixins
         .MinimumLength(10)
         .WithName("Password");
 
+    public static IRuleBuilderOptions<T, string> Flag<T>(this IRuleBuilder<T, string> builder)
+        => builder
+        .NotEmpty()
+        .Length(3, 50)
+        .WithName("Flag");
+
     public static IRuleBuilderOptions<T, TValid> Valid<T, TValid>(this IRuleBuilder<T, TValid> builder)
         where TValid : IValid<TValid>
         => builder.SetValidator(TValid.Validator);

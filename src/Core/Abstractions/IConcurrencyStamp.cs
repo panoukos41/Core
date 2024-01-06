@@ -2,5 +2,5 @@
 
 public interface IConcurrencyStamp
 {
-    string ConcurrencyStamp { get; set; }
+    string ConcurrencyStamp { get; }
 }
