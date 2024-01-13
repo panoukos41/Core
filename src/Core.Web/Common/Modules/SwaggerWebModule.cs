@@ -1,11 +1,12 @@
-﻿using Core.Primitives;
+﻿using Core.Abstractions;
+using Core.Primitives;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerUI;
 
-namespace Core.Common;
+namespace Core.Common.Modules;
 
 public class SwaggerWebModule : SwaggerUIOptions, IWebModule<SwaggerWebModule>
 {

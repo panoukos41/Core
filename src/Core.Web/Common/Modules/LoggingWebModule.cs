@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Core.Abstractions;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Core.Common;
+namespace Core.Common.Modules;
 
 public class LoggingWebModule : LoggerConfiguration, IWebModule<LoggingWebModule>
 {
@@ -13,15 +14,6 @@ public class LoggingWebModule : LoggerConfiguration, IWebModule<LoggingWebModule
     /// MinimumLevel = Information when debug and Warning when release.
     /// </remarks>
     public bool AddDefaults { get; set; } = true;
-
-    /// <summary>
-    /// Sets <see cref="AddDefaults"/> to <see langword="false"/> in a fluent manner.
-    /// </summary>
-    public LoggingWebModule NoDefaults()
-    {
-        AddDefaults = false;
-        return this;
-    }
 
     public static void Add(WebApplicationBuilder builder, LoggingWebModule module)
     {
@@ -36,7 +28,6 @@ public class LoggingWebModule : LoggerConfiguration, IWebModule<LoggingWebModule
                 .MinimumLevel.Warning();
 #endif
         }
-
         Log.Logger = module.CreateLogger();
         builder.Host.UseSerilog();
     }

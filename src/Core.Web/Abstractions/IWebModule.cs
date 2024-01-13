@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 
-namespace Core;
+namespace Core.Abstractions;
 
 public interface IWebModule<TSelf> where TSelf : class, IWebModule<TSelf>, new()
 {
