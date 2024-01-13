@@ -11,11 +11,8 @@ using System.Threading.Tasks;
 /// Represents a void type, since <see cref="void"/> is not a valid return type in C#.
 /// </summary>
 [JsonConverter(typeof(NoneJsonConverter))]
-//public readonly struct None :
-public class None :
-    IEquatable<None>,
-    IComparable<None>,
-    IComparable
+[Serializable]
+public sealed class None : IEquatable<None>
 {
     /// <summary>
     /// Default and only value of the <see cref="None"/> type.
@@ -23,89 +20,50 @@ public class None :
     public static readonly None Value = new();
 
     /// <summary>
-    /// Task from a <see cref="None"/> type.
+    /// Task with a <see cref="None"/> return type.
     /// </summary>
     public static readonly Task<None> Task = System.Threading.Tasks.Task.FromResult(Value);
 
     /// <summary>
-    /// Value task with a <see cref="None"/> type.
+    /// Value task with a <see cref="None"/> return type.
     /// </summary>
     public static readonly ValueTask<None> ValueTask = new(Value);
 
-    /// <summary>
-    /// Determines whether the specified <see cref="object" /> is equal to this instance.
-    /// </summary>
-    /// <param name="obj">The object to compare with the current instance.</param>
-    /// <returns>
-    /// <c>true</c> if the specified <see cref="object" /> is equal to this instance; otherwise, <c>false</c>.
-    /// </returns>
-    public override bool Equals(object? obj) => obj is None;
-
-    ///// <summary>
-    ///// Determines whether the current object is equal to another object of the same type.
-    ///// </summary>
-    ///// <param name="other">An object to compare with this object.</param>
-    ///// <returns>
-    ///// <c>true</c> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <c>false</c>.
-    ///// </returns>
-    //public bool Equals(None other) => true;
-
-    /// <summary>
-    /// Determines whether the current object is equal to another object of the same type.
-    /// </summary>
-    /// <param name="other">An object to compare with this object.</param>
-    /// <returns>
-    /// <c>true</c> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <c>false</c>.
-    /// </returns>
+    /// <inheritdoc/>
     public bool Equals(None? other) => other is { };
 
-    ///// <inheritdoc/>
-    //public int CompareTo(None other) => 0;
-
     /// <inheritdoc/>
-    public int CompareTo(None? other) => other is { } ? 0 : -1;
-
-    /// <inheritdoc/>
-    int IComparable.CompareTo(object? obj) => obj is None ? 0 : -1;
+    public override bool Equals(object? obj) => obj is None;
 
     /// <inheritdoc/>
     public override int GetHashCode() => 0;
 
     /// <inheritdoc/>
-    public static bool operator ==(None? first, None? second) => true;
+    public override string ToString() => "{}";
 
-    /// <inheritdoc/>
-    public static bool operator !=(None? first, None? second) => false;
+    public static bool operator ==(None first, None second) => true;
 
-    /// <inheritdoc/>
-    public static bool operator <(None? left, None? right) => false;
+    public static bool operator !=(None first, None second) => false;
 
-    /// <inheritdoc/>
-    public static bool operator <=(None? left, None? right) => true;
+    public static implicit operator Task(None none) => System.Threading.Tasks.Task.CompletedTask;
 
-    /// <inheritdoc/>
-    public static bool operator >(None? left, None? right) => false;
+    public static implicit operator Task<None>(None none) => Task;
 
-    /// <inheritdoc/>
-    public static bool operator >=(None? left, None? right) => true;
+    public static implicit operator ValueTask(None none) => System.Threading.Tasks.ValueTask.CompletedTask;
 
-    /// <inheritdoc/>
-    public static implicit operator Task(None? @void) => System.Threading.Tasks.Task.CompletedTask;
+    public static implicit operator ValueTask<None>(None none) => ValueTask;
 
-    /// <inheritdoc/>
-    public static implicit operator ValueTask(None? @void) => System.Threading.Tasks.ValueTask.CompletedTask;
-}
-
-file sealed class NoneJsonConverter : JsonConverter<None>
-{
-    public override None Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    private sealed class NoneJsonConverter : JsonConverter<None>
     {
-        return None.Value;
-    }
+        public override None Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            return Value;
+        }
 
-    public override void Write(Utf8JsonWriter writer, None value, JsonSerializerOptions options)
-    {
-        writer.WriteStartObject();
-        writer.WriteEndObject();
+        public override void Write(Utf8JsonWriter writer, None value, JsonSerializerOptions options)
+        {
+            writer.WriteStartObject();
+            writer.WriteEndObject();
+        }
     }
 }
