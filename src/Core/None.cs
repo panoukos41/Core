@@ -14,9 +14,7 @@ using System.Threading.Tasks;
 //public readonly struct None :
 public class None :
     IEquatable<None>,
-    IEquatable<None?>,
     IComparable<None>,
-    IComparable<None?>,
     IComparable
 {
     /// <summary>

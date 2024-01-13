@@ -11,20 +11,14 @@ namespace Core;
 /// A <see cref="Uuid"/> can be between 11 and 32 characters.
 /// </summary>
 [JsonConverter(typeof(UuidJsonConverter))]
-[DebuggerDisplay("{nanoId}")]
+[DebuggerDisplay("{ToString()}")]
 public readonly struct Uuid :
     IParsable<Uuid>,
-    IEquatable<Uuid>,
-    IEquatable<Uuid?>
+    IEquatable<Uuid>
 {
-    public static Uuid Empty { get; } = new Uuid();
+    public static Uuid Empty { get; }
 
-    private readonly string nanoId;
-
-    public Uuid()
-    {
-        nanoId = string.Empty;
-    }
+    private readonly string? nanoId;
 
     private Uuid(string nanoId)
     {
@@ -49,7 +43,7 @@ public readonly struct Uuid :
 
     public override string ToString()
     {
-        return nanoId;
+        return nanoId ?? string.Empty;
     }
 
     #region IParsable
@@ -90,9 +84,7 @@ public readonly struct Uuid :
 
     public bool Equals(Uuid other) => nanoId == other.nanoId;
 
-    public bool Equals(Uuid? other) => nanoId == other?.nanoId;
-
-    public override int GetHashCode() => nanoId.GetHashCode();
+    public override int GetHashCode() => HashCode.Combine(nanoId);
 
     public static bool operator ==(Uuid left, Uuid right) => left.nanoId == right.nanoId;
 
@@ -100,7 +92,7 @@ public readonly struct Uuid :
 
     #endregion
 
-    public static implicit operator string(Uuid value) => value.nanoId;
+    public static implicit operator string(Uuid value) => value.ToString();
 }
 
 // MIT License
