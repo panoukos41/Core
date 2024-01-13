@@ -12,13 +12,19 @@ public struct Phone : ISpanParsable<Phone>, IEquatable<Phone>, IEquatable<Phone?
     private static readonly SearchValues<char> separatorSearch = SearchValues.Create([' ']);
     private string? _formatted;
 
-    public static Phone Empty { get; } = new(string.Empty, string.Empty);
+    public static Phone Empty { get; } = default;
 
     public required string CallingCode { get; init; }
 
     public required string Number { get; init; }
 
-    public string Formatted => _formatted ??= string.Join(' ', CallingCode, Number);
+    public string Formatted => _formatted ??= (CallingCode, Number) switch
+    {
+        (null, null) => string.Empty,
+        (null, { }) => Number,
+        ({ }, null) => CallingCode,
+        _ => $"{CallingCode} {Number}"
+    };
 
     [SetsRequiredMembers]
     public Phone(string callingCode, string number)
@@ -27,7 +33,7 @@ public struct Phone : ISpanParsable<Phone>, IEquatable<Phone>, IEquatable<Phone?
         Number = number;
     }
 
-    public override string ToString()
+    public override string? ToString()
     {
         return Formatted;
     }
@@ -35,6 +41,12 @@ public struct Phone : ISpanParsable<Phone>, IEquatable<Phone>, IEquatable<Phone?
     public static bool TryParse(ReadOnlySpan<char> s, IFormatProvider? provider, [MaybeNullWhen(false)] out Phone result)
     {
         Unsafe.SkipInit(out result);
+
+        if (s.IsEmpty)
+        {
+            result = Empty;
+            return true;
+        }
 
         var separatorIndex = s.IndexOfAny(separatorSearch);
         if (separatorIndex == -1) return false;
@@ -67,9 +79,8 @@ public struct Phone : ISpanParsable<Phone>, IEquatable<Phone>, IEquatable<Phone?
     /// <inheritdoc/>
     public readonly bool Equals(Phone other)
     {
-        return other is { } phone
-            && phone.CallingCode == CallingCode
-            && phone.Number == Number;
+        return other.CallingCode == CallingCode
+            && other.Number == Number;
     }
 
     /// <inheritdoc/>
