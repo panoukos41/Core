@@ -1,5 +1,4 @@
-﻿using Core.Abstractions.Events;
-using Core.Abstractions.Requests;
+﻿using Core.Abstractions.Requests;
 
 namespace Core.Common.Behaviors;
 
@@ -7,15 +6,11 @@ public sealed class RunnerBehavior<TRequest, TResponse> : IPipelineBehavior<TReq
     where TRequest : IMessage
     where TResponse : IResultUnion
 {
-    private readonly IEnumerable<IEventHandler<RequestSucceededEvent>> successEventHandlers;
-    private readonly IEnumerable<IEventHandler<RequestFailedEvent>> failedEventHandlers;
+    private readonly IEventPublisher eventPublisher;
 
-    public RunnerBehavior(
-        IEnumerable<IEventHandler<RequestSucceededEvent>> successEventHandlers,
-        IEnumerable<IEventHandler<RequestFailedEvent>> failedEventHandlers)
+    public RunnerBehavior(IEventPublisher eventPublisher)
     {
-        this.successEventHandlers = successEventHandlers;
-        this.failedEventHandlers = failedEventHandlers;
+        this.eventPublisher = eventPublisher;
     }
 
     public async ValueTask<TResponse> Handle(TRequest request, CancellationToken cancellationToken, MessageHandlerDelegate<TRequest, TResponse> next)
@@ -52,19 +47,13 @@ public sealed class RunnerBehavior<TRequest, TResponse> : IPipelineBehavior<TReq
 
     private void PublishRequestSuccess(TRequest request)
     {
-        var @event = new RequestSucceededEvent(request);
-        foreach (var h in successEventHandlers)
-        {
-            h.Handle(@event, default).FireAndForget(static ex => Log.ForContext<RequestSucceededEvent>().Error(ex, "Error on EventHandler"));
-        }
+        var @event = new RequestSucceededEvent<TRequest>(request);
+        eventPublisher.Publish(@event);
     }
 
     private void PublishRequestFailed(TRequest request, Problem problem)
     {
-        var @event = new RequestFailedEvent(request, problem);
-        foreach (var h in failedEventHandlers)
-        {
-            h.Handle(@event, default).FireAndForget(static ex => Log.ForContext<RequestFailedEvent>().Error(ex, "Error on EventHandler"));
-        }
+        var @event = new RequestFailedEvent<TRequest>(request, problem);
+        eventPublisher.Publish(@event);
     }
 }
