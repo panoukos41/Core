@@ -5,7 +5,6 @@ namespace Core.Abstractions.Requests;
 /// <summary>
 /// Event that is raised when a request fails.
 /// </summary>
-/// <remarks>These must be raised from a behavior or the user.</remarks>
 public class RequestFailedEvent
 {
     /// <summary>
@@ -32,5 +31,25 @@ public class RequestFailedEvent
     {
         Request = request;
         Problem = problem;
+    }
+}
+
+/// <summary>
+/// Event that is raised when a request fails.
+/// </summary>
+public class RequestFailedEvent<TRequest> : RequestFailedEvent where TRequest : IMessage
+{
+    /// <summary>
+    /// The request which failed.
+    /// </summary>
+    public new TRequest Request => (TRequest)Request;
+
+    /// <summary>
+    /// Initializes a new instance of <see cref="RequestSucceededEvent"/> for the current request.
+    /// </summary>
+    /// <param name="request">The request this event is initialized for.</param>
+    /// <param name="problem">The problem the request generated.</param>
+    public RequestFailedEvent(IMessage request, Problem problem) : base(request, problem)
+    {
     }
 }
