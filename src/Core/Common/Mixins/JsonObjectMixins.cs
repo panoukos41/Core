@@ -99,4 +99,19 @@ public static class JsonObjectMixins
             _ => default
         };
     }
+
+    public static List<T>? GetList<T>(this JsonObject? obj, string key)
+    {
+        if (obj is null ||
+            obj.TryGetPropertyValue(key, out var property) is false ||
+            property is null)
+        {
+            return default;
+        }
+        return property.GetValueKind() switch
+        {
+            JsonValueKind.Array => property.Deserialize<List<T>>(),
+            _ => default
+        };
+    }
 }
