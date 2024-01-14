@@ -108,8 +108,8 @@ public static class ProblemMixins
         return WithMetadata(problem, "ValidationFailures", failures);
     }
 
-    public static ValidationFailure[]? GetValidationFailures(this Problem problem)
+    public static List<ValidationFailure>? GetValidationFailures(this Problem problem)
     {
-        return problem.Metadata?.GetArray<ValidationFailure>("ValidationFailures");
+        return problem.Metadata?.GetList<ValidationFailure>("ValidationFailures");
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Core.Common.JsonConverters;
 using System.Buffers;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
@@ -7,6 +8,7 @@ using System.Text.Json.Serialization;
 namespace Core.Primitives;
 
 [JsonConverter(typeof(PhoneJsonConverter))]
+[DebuggerDisplay("{Formatted}")]
 public struct Phone : ISpanParsable<Phone>, IEquatable<Phone>, IEquatable<Phone?>
 {
     private static readonly SearchValues<char> separatorSearch = SearchValues.Create([' ']);
