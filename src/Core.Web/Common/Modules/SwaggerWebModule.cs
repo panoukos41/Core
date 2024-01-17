@@ -2,6 +2,7 @@
 using Core.Primitives;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerUI;
@@ -10,6 +11,8 @@ namespace Core.Common.Modules;
 
 public class SwaggerWebModule : SwaggerUIOptions, IWebModule<SwaggerWebModule>
 {
+    public bool Enable { get; set; }
+
     public static void Add(WebApplicationBuilder builder, SwaggerWebModule module)
     {
         var services = builder.Services;
@@ -33,21 +36,23 @@ public class SwaggerWebModule : SwaggerUIOptions, IWebModule<SwaggerWebModule>
         });
     }
 
-    public static void Use(WebApplication app)
+    public static void Use(WebApplication app, SwaggerWebModule module)
     {
-        app.UseSwagger();
-        app.UseSwaggerUI(options =>
+        if (app.Environment.IsDevelopment() || module.Enable)
         {
-            var module = app.Services.GetRequiredService<SwaggerWebModule>();
+            app.UseSwagger();
+            app.UseSwaggerUI(options =>
+            {
 
-            options.ConfigObject = module.ConfigObject;
-            options.DocumentTitle = module.DocumentTitle;
-            options.HeadContent = module.HeadContent;
-            options.IndexStream = module.IndexStream;
-            options.Interceptors = module.Interceptors;
-            options.OAuthConfigObject = module.OAuthConfigObject;
-            options.RoutePrefix = module.RoutePrefix == "swagger" ? "docs" : module.RoutePrefix;
-        });
-        app.MapSwagger();
+                options.ConfigObject = module.ConfigObject;
+                options.DocumentTitle = module.DocumentTitle;
+                options.HeadContent = module.HeadContent;
+                options.IndexStream = module.IndexStream;
+                options.Interceptors = module.Interceptors;
+                options.OAuthConfigObject = module.OAuthConfigObject;
+                options.RoutePrefix = module.RoutePrefix == "swagger" ? "docs" : module.RoutePrefix;
+            });
+            app.MapSwagger();
+        }
     }
 }

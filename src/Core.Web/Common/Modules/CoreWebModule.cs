@@ -1,9 +1,7 @@
 ﻿using Core.Abstractions;
 using Core.Common.Hosting;
-using FluentValidation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
-using System.Reflection;
 
 namespace Core.Common.Modules;
 
@@ -22,24 +20,7 @@ public sealed class CoreWebModule : IWebModule<CoreWebModule>
         }
     }
 
-    public static void Use(WebApplication app)
+    public static void Use(WebApplication app, CoreWebModule module)
     {
-        var modules = Enumerable.Concat(
-            IAppModuleMixins.Modules.Values.Where(x => x is IValid valid),
-            IWebModuleMixins.Modules.Values.Where(x => x is IValid valid)
-        );
-
-        foreach (var module in modules)
-        {
-            var moduleType = module.GetType();
-            var validatorProperty = moduleType.GetProperty(nameof(IValid.Validator), BindingFlags.Static | BindingFlags.Public)!;
-            var validator = (IValidator)validatorProperty.GetValue(null)!;
-            var context = new ValidationContext<object>(module);
-
-            if (validator.Validate(context).Errors is { Count: > 0 } errors)
-            {
-                throw new ValidationException($"{moduleType}", errors, true);
-            }
-        }
     }
 }

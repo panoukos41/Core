@@ -1,6 +1,5 @@
 ﻿using Core.Abstractions;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Core.Common.Modules;
 
@@ -32,10 +31,8 @@ public class LoggingWebModule : LoggerConfiguration, IWebModule<LoggingWebModule
         builder.Host.UseSerilog();
     }
 
-    public static void Use(WebApplication app)
+    public static void Use(WebApplication app, LoggingWebModule module)
     {
-        app.Services.GetRequiredService<LoggingWebModule>(); // check module has been registered.
-
         app.UseSerilogRequestLogging();
     }
 }
