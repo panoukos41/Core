@@ -1,21 +1,19 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-using System.Collections.ObjectModel;
+﻿using FluentValidation;
+using Microsoft.AspNetCore.Builder;
+using System.Reflection;
 
 namespace Core.Abstractions;
 
 public static class IWebModuleMixins
 {
+    private static readonly Type validType = typeof(IValid);
     private static readonly Dictionary<Type, object> modules = [];
-
-    public static IReadOnlyDictionary<Type, object> Modules => new ReadOnlyDictionary<Type, object>(modules);
 
     public static void AddAppModule<TAppModule>(this WebApplicationBuilder builder, Action<TAppModule>? configure = null)
         where TAppModule : class, IAppModule<TAppModule>, new()
     {
         var services = builder.Services;
         var configuration = builder.Configuration;
-
         services.AddAppModule(configuration, configure);
     }
 
@@ -23,21 +21,40 @@ public static class IWebModuleMixins
         where TWebModule : class, IWebModule<TWebModule>, new()
     {
         var moduleType = typeof(TWebModule);
-        if (modules.ContainsKey(moduleType))
-            return;
-
         var module = new TWebModule();
-        modules.Add(moduleType, module);
-        builder.Services.AddSingleton(module);
-        TWebModule.Add(builder, module);
-        Log.ForContext<TWebModule>().Debug("Added WebModule: {Module}", moduleType.Name);
-        configure?.Invoke(module);
+
+        if (modules.TryAdd(moduleType, module))
+        {
+            configure?.Invoke(module);
+            if (moduleType.IsAssignableTo(validType))
+            {
+                var validatorProperty = moduleType.GetProperty(nameof(IValid.Validator), BindingFlags.Static | BindingFlags.Public)!;
+                var validator = (IValidator)validatorProperty.GetValue(null)!;
+                var context = new ValidationContext<object>(module);
+                var result = validator.Validate(context);
+                if (!result.IsValid)
+                {
+                    var errors = result.Errors.Select(x => $"{x.PropertyName}: {x.ErrorMessage} Severity: {x.Severity}");
+                    throw new ValidationException(result.Errors);
+                }
+            }
+            TWebModule.Add(builder, module);
+            Log.ForContext<TWebModule>().Debug("Added WebModule: {Module}", moduleType.Name);
+        }
     }
 
     public static void UseWebModule<TWebModule>(this WebApplication app)
         where TWebModule : class, IWebModule<TWebModule>, new()
     {
-        TWebModule.Use(app);
-        Log.ForContext<TWebModule>().Debug("Using WebModule: {Module}", typeof(TWebModule).Name);
+        var moduleType = typeof(TWebModule);
+        if (modules.TryGetValue(moduleType, out var module))
+        {
+            TWebModule.Use(app, (TWebModule)module);
+            Log.ForContext<TWebModule>().Debug("Using WebModule: {Module}", typeof(TWebModule).Name);
+        }
+        else
+        {
+            throw new InvalidOperationException($"Module {moduleType} was not added. First add it and then use it.");
+        }
     }
 }
