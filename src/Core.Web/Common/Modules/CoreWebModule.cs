@@ -1,7 +1,9 @@
 ﻿using Core.Abstractions;
 using Core.Common.Hosting;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Core.Common.Modules;
 
@@ -18,6 +20,10 @@ public sealed class CoreWebModule : IWebModule<CoreWebModule>
         {
             builder.Services.AddHostedService<EventHost>();
         }
+
+        builder.Services.AddHttpContextAccessor();
+        builder.Services.TryAddScoped(sp => sp.GetRequiredService<IHttpContextAccessor>().HttpContext!);
+        builder.Services.TryAddScoped(sp => sp.GetRequiredService<HttpContext>().User);
     }
 
     public static void Use(WebApplication app, CoreWebModule module)

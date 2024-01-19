@@ -9,7 +9,7 @@ public class CoreMongoDbAppModule : IAppModule<CoreMongoDbAppModule>
 {
     public static void Add(IServiceCollection services, IConfiguration configuration)
     {
-        JsonObjectSerializer.RegisterProvider();
+        JsonObjectBsonSerializer.RegisterProvider();
         PhoneBsonSerializer.RegisterProvider();
         UuidBsonSerializer.RegisterProvider();
     }
