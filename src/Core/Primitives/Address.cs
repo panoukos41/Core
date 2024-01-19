@@ -36,15 +36,7 @@ public readonly record struct Address :
         return HashCode.Combine(Street, Region, ZipCode, City, Country, Location);
     }
 
-    public static Address Empty { get; } = new()
-    {
-        Street = string.Empty,
-        Region = string.Empty,
-        City = string.Empty,
-        Country = string.Empty,
-        ZipCode = string.Empty,
-        Location = Primitives.Location.Empty
-    };
+    public static Address Empty { get; } = default;
 
     public static IValidator<Address> Validator { get; } = InlineValidator.For<Address>(data =>
     {
@@ -69,8 +61,8 @@ public readonly record struct Address :
             .When(x => x.Country is { });
 
         data.RuleFor(x => x.Location!.Value)
-            .SetValidator(Primitives.Location.Validator)
-            .OverridePropertyName(nameof(Address.Location))
+            .Valid()
+            .OverridePropertyName(nameof(Location))
             .When(x => x.Location is { });
     });
 }
