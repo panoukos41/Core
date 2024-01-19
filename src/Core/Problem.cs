@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using FluentValidation.Results;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
@@ -50,6 +51,11 @@ public sealed record Problem
     /// </returns>
     [JsonIgnore]
     public Exception? Exception { get; init; }
+
+    /// <summary>
+    /// A list containing validation failures.
+    /// </summary>
+    public List<ValidationFailure>? ValidationFailures { get; init; }
 
     /// <summary>
     /// Test whether the <see cref="Exception"/> or <see cref="Type"/> property is equal to <typeparamref name="TException"/>.

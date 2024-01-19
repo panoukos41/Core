@@ -73,7 +73,7 @@ public abstract class RxObject :
     {
         if (validationResult.Errors is { Count: > 0 } errors)
         {
-            SendProblem(Problems.Validation.WithValidationErrors(errors));
+            SendProblem(Problems.Validation.WithValidationFailures(errors));
             return true;
         }
         return false;

@@ -29,7 +29,7 @@ public sealed class FluentValidationBehavior<TRequest, TResponse> : IPipelineBeh
 
             if (validationResults.Count > 0)
             {
-                return (TResponse)TResponse.CreateEr(Problems.Validation.WithValidationErrors(validationResults));
+                return (TResponse)TResponse.CreateEr(Problems.Validation.WithValidationFailures(validationResults));
             }
         }
 

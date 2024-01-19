@@ -18,7 +18,7 @@ public static class Problems
         Type = nameof(Validation),
         Title = nameof(Validation),
         Status = 400,
-        Detail = "Validation problems have occurred with your model. Check the Metadata:ValidationErrors a list of ValidationFailure objects."
+        Detail = "Validation problems have occurred with your model. Check the ValidationFailures for a list of ValidationFailure objects."
     };
 
     public static Problem Unauthorized { get; } = new()
@@ -100,16 +100,20 @@ public static class ProblemMixins
         newProblem.Metadata
             .CopyFrom(problem?.Metadata)
             .CopyFrom(jObject);
+
         return newProblem;
     }
 
-    public static Problem WithValidationErrors(this Problem problem, List<ValidationFailure> failures)
+    public static Problem WithValidationFailures(this Problem problem, List<ValidationFailure> failures, bool retainOldFailures = true)
     {
-        return WithMetadata(problem, "ValidationFailures", failures);
-    }
+        if (failures is not { Count: > 1 })
+            return problem;
 
-    public static List<ValidationFailure>? GetValidationFailures(this Problem problem)
-    {
-        return problem.Metadata?.GetList<ValidationFailure>("ValidationFailures");
+        var newProblem = problem with { ValidationFailures = failures };
+        if (retainOldFailures)
+        {
+            newProblem.ValidationFailures.AddRange(failures);
+        }
+        return newProblem;
     }
 }

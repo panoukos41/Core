@@ -13,6 +13,6 @@ public sealed class ValidBehavior<TRequest, TResponse> : IPipelineBehavior<TRequ
 
         return validationResult.IsValid
             ? next(message, cancellationToken)
-            : new((TResponse)TResponse.CreateEr(Problems.Validation.WithValidationErrors(validationResult.Errors)));
+            : new((TResponse)TResponse.CreateEr(Problems.Validation.WithValidationFailures(validationResult.Errors)));
     }
 }
