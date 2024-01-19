@@ -5,5 +5,5 @@
 /// </summary>
 public interface IRequestId
 {
-    Guid RequestId { get; init; }
+    Guid RequestId { get; }
 }

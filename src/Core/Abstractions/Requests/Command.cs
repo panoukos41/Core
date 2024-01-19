@@ -48,13 +48,19 @@ public abstract record Command<TData, TResult> : Command<TResult>, IValid
 /// </summary>
 public abstract record DeleteCommand : Command<None>, IValid<DeleteCommand>
 {
-    public Uuid Id { get; }
+    public required Uuid Id { get; init; }
 
+    protected DeleteCommand()
+    {
+    }
+
+    [SetsRequiredMembers]
     protected DeleteCommand(Uuid id)
     {
         Id = id;
     }
 
+    [SetsRequiredMembers]
     protected DeleteCommand(IEntity model)
     {
         Id = model.Id;
