@@ -9,15 +9,17 @@ public static class IWebModuleMixins
     private static readonly Type validType = typeof(IValid);
     private static readonly Dictionary<Type, object> modules = [];
 
-    public static void AddAppModule<TAppModule>(this WebApplicationBuilder builder, Action<TAppModule>? configure = null)
+    public static WebApplicationBuilder AddAppModule<TAppModule>(this WebApplicationBuilder builder, Action<TAppModule>? configure = null)
         where TAppModule : class, IAppModule<TAppModule>, new()
     {
         var services = builder.Services;
         var configuration = builder.Configuration;
         services.AddAppModule(configuration, configure);
+
+        return builder;
     }
 
-    public static void AddWebModule<TWebModule>(this WebApplicationBuilder builder, Action<TWebModule>? configure = null)
+    public static WebApplicationBuilder AddWebModule<TWebModule>(this WebApplicationBuilder builder, Action<TWebModule>? configure = null)
         where TWebModule : class, IWebModule<TWebModule>, new()
     {
         var moduleType = typeof(TWebModule);
@@ -41,9 +43,10 @@ public static class IWebModuleMixins
             TWebModule.Add(builder, module);
             Log.ForContext<TWebModule>().Debug("Added WebModule: {Module}", moduleType.Name);
         }
+        return builder;
     }
 
-    public static void UseWebModule<TWebModule>(this WebApplication app)
+    public static WebApplication UseWebModule<TWebModule>(this WebApplication app)
         where TWebModule : class, IWebModule<TWebModule>, new()
     {
         var moduleType = typeof(TWebModule);
@@ -56,5 +59,6 @@ public static class IWebModuleMixins
         {
             throw new InvalidOperationException($"Module {moduleType} was not added. First add it and then use it.");
         }
+        return app;
     }
 }

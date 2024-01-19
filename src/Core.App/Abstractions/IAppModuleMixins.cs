@@ -11,7 +11,7 @@ public static class IAppModuleMixins
     private static readonly Type validType = typeof(IValid);
     private static readonly HashSet<Type> modules = [];
 
-    public static void AddAppModule<TAppModule>(this IServiceCollection services, IConfiguration configuration, Action<TAppModule>? configure = null)
+    public static IServiceCollection AddAppModule<TAppModule>(this IServiceCollection services, IConfiguration configuration, Action<TAppModule>? configure = null)
         where TAppModule : class, IAppModule<TAppModule>, new()
     {
         var moduleType = typeof(TAppModule);
@@ -29,6 +29,7 @@ public static class IAppModuleMixins
         {
             services.Configure(configure);
         }
+        return services;
     }
 
     private sealed class CustomValidateOptions<TAppModule> : IValidateOptions<TAppModule> where TAppModule : class
