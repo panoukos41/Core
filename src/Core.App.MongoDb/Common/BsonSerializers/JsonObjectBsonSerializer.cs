@@ -6,24 +6,27 @@ using System.Text.Json.Nodes;
 
 namespace Core.MongoDb.Common.BsonSerializers;
 
-public sealed class JsonObjectSerializer :
+public sealed class JsonObjectBsonSerializer :
     SerializerBase<JsonObject>,
     IBsonSerializationProvider
 {
     private static readonly Type type = typeof(JsonObject);
+    private static bool registered;
 
-    private static JsonObjectSerializer Provider { get; } = new();
+    private static JsonObjectBsonSerializer Provider { get; } = new();
 
     // todo: Look into IBsonDocumentSerializer
 
     public static void RegisterProvider()
     {
+        if (registered) return;
+        registered = true;
         BsonSerializer.RegisterSerializationProvider(Provider);
     }
 
     public IBsonSerializer GetSerializer(Type type)
     {
-        return type == JsonObjectSerializer.type ? Provider : null!;
+        return type == JsonObjectBsonSerializer.type ? Provider : null!;
     }
 
     public override JsonObject Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)

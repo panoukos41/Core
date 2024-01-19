@@ -8,11 +8,14 @@ public sealed class UuidBsonSerializer :
     IBsonSerializationProvider
 {
     private static readonly Type type = typeof(Uuid);
+    private static bool registered;
 
     private static UuidBsonSerializer Provider { get; } = new();
 
     public static void RegisterProvider()
     {
+        if (registered) return;
+        registered = true;
         BsonSerializer.RegisterSerializationProvider(Provider);
     }
 

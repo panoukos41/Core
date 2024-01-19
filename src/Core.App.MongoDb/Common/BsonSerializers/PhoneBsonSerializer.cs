@@ -9,11 +9,14 @@ public sealed class PhoneBsonSerializer :
     IBsonSerializationProvider
 {
     private static readonly Type type = typeof(Phone);
+    private static bool registered;
 
     private static PhoneBsonSerializer Provider { get; } = new();
 
     public static void RegisterProvider()
     {
+        if (registered) return;
+        registered = true;
         BsonSerializer.RegisterSerializationProvider(Provider);
     }
 
