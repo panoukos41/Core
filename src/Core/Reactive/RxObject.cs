@@ -16,7 +16,7 @@ public abstract class RxObject :
     IDisposable
 {
     private readonly Lazy<Subject<Problem>> problemSubject = new(static () => new());
-    private readonly Lazy<CompositeDisposable> disposables = new(static () => new());
+    private readonly Lazy<CompositeDisposable> disposables = new(static () => []);
 
     /// <inheritdoc/>
     public IObservable<Problem> WhenProblem => problemSubject.Value;
