@@ -2,8 +2,10 @@
 
 public static class IDisposableMixins
 {
-    public static void DisposeWith(this IDisposable disposable, ICollection<IDisposable> disposables)
+    public static TDisposable DisposeWith<TDisposable>(this TDisposable disposable, ICollection<IDisposable> disposables)
+        where TDisposable : IDisposable
     {
         disposables.Add(disposable);
+        return disposable;
     }
 }
