@@ -91,7 +91,7 @@ public static class ProblemMixins
 
     public static Problem WithMetadata(this Problem problem, IDictionary<string, object> metadata)
     {
-        if (metadata is not { Count: > 1 })
+        if (metadata.Count is 0)
             return problem;
 
         var newProblem = problem with { Metadata = [] };
@@ -106,13 +106,13 @@ public static class ProblemMixins
 
     public static Problem WithValidationFailures(this Problem problem, List<ValidationFailure> failures, bool retainOldFailures = true)
     {
-        if (failures is not { Count: > 1 })
+        if (failures.Count is 0)
             return problem;
 
         var newProblem = problem with { ValidationFailures = failures };
-        if (retainOldFailures)
+        if (retainOldFailures && problem.ValidationFailures is { Count: > 1})
         {
-            newProblem.ValidationFailures.AddRange(failures);
+            newProblem.ValidationFailures.AddRange(problem.ValidationFailures);
         }
         return newProblem;
     }
