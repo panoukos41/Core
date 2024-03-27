@@ -1,5 +1,7 @@
 ﻿using Core.Abstractions;
+using Core.Common.Events;
 using Core.Common.Hosting;
+using Mediator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,6 +18,10 @@ public sealed class CoreWebModule : IWebModule<CoreWebModule>
 
     public static void Add(WebApplicationBuilder builder, CoreWebModule module)
     {
+        builder.Services.AddSingleton<EventPublisher>();
+        builder.Services.AddSingleton<IEventPublisher>(static sp => sp.GetRequiredService<EventPublisher>());
+        builder.Services.AddSingleton<IEventSubscriber>(static sp => sp.GetRequiredService<EventPublisher>());
+
         if (module.UseEventHost)
         {
             builder.Services.AddHostedService<EventHost>();
