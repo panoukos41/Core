@@ -261,7 +261,9 @@ public abstract class RxObject :
         }
         ChangingHandler = null;
         ChangedHandler = null;
+        changingSubject.OnCompleted();
         changingSubject.Dispose();
+        changedSubject.OnCompleted();
         changedSubject.Dispose();
 
         GC.SuppressFinalize(this);
