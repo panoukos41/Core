@@ -27,7 +27,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core.App.MongoDb", "src\Cor
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core.Web", "src\Core.Web\Core.Web.csproj", "{034FE370-6C9C-42F3-9656-44B8BDDE70CD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core.UnitTests", "tests\Core.UnitTests\Core.UnitTests.csproj", "{249106CF-47F1-46DD-A29B-51CF6D77267E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core.UnitTests", "tests\Core.UnitTests\Core.UnitTests.csproj", "{249106CF-47F1-46DD-A29B-51CF6D77267E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core.Blazor", "src\Core.Blazor\Core.Blazor.csproj", "{D47182D4-EF8A-4C46-AF0F-E5086B8053E8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,6 +57,10 @@ Global
 		{249106CF-47F1-46DD-A29B-51CF6D77267E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{249106CF-47F1-46DD-A29B-51CF6D77267E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{249106CF-47F1-46DD-A29B-51CF6D77267E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D47182D4-EF8A-4C46-AF0F-E5086B8053E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D47182D4-EF8A-4C46-AF0F-E5086B8053E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D47182D4-EF8A-4C46-AF0F-E5086B8053E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D47182D4-EF8A-4C46-AF0F-E5086B8053E8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -65,6 +71,7 @@ Global
 		{0AD212D6-4913-4E88-A049-CE2A2D7BE35E} = {22307614-7109-4BEB-A918-B1B0F0B94B3A}
 		{034FE370-6C9C-42F3-9656-44B8BDDE70CD} = {22307614-7109-4BEB-A918-B1B0F0B94B3A}
 		{249106CF-47F1-46DD-A29B-51CF6D77267E} = {18206A23-B186-4699-AC40-DAFF859E349F}
+		{D47182D4-EF8A-4C46-AF0F-E5086B8053E8} = {22307614-7109-4BEB-A918-B1B0F0B94B3A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2CFF447F-23DD-4AAA-819D-262D673B9ACF}
