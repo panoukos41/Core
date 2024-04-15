@@ -10,7 +10,7 @@ public static class Options
         PropertyNamingPolicy = null,
         PropertyNameCaseInsensitive = true,
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault,
-        ReferenceHandler = ReferenceHandler.IgnoreCycles,
+        //ReferenceHandler = ReferenceHandler.IgnoreCycles,
         Converters = { new ResultJsonConverter() }
     };
 
@@ -20,6 +20,7 @@ public static class Options
         options.PropertyNameCaseInsensitive = Json.PropertyNameCaseInsensitive;
         options.DefaultIgnoreCondition = Json.DefaultIgnoreCondition;
         options.ReferenceHandler = Json.ReferenceHandler;
+        options.PreferredObjectCreationHandling = Json.PreferredObjectCreationHandling;
         foreach (var converter in Json.Converters.Except(options.Converters))
         {
             options.Converters.Add(converter);
