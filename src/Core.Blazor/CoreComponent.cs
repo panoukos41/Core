@@ -3,13 +3,18 @@ using Microsoft.AspNetCore.Components;
 using System.Reactive.Disposables;
 using System.Runtime.CompilerServices;
 
-namespace Core.Blazor.Components;
+namespace Core.Blazor;
 
 public abstract class CoreComponent : IgnisComponentBase, IDisposable
 {
     private readonly Lazy<CompositeDisposable> disposables = new(static () => []);
 
     protected CompositeDisposable Disposables => disposables.Value;
+
+    public void TriggerUpdate()
+    {
+        Update();
+    }
 
     /// <summary>
     /// Add a disposable to the <see cref="Disposables"/> list.
@@ -25,11 +30,15 @@ public abstract class CoreComponent : IgnisComponentBase, IDisposable
     [Parameter(CaptureUnmatchedValues = true)]
     public IDictionary<string, object?>? Attributes { get; set; }
 
+    public string? Class() => TryGetAttribute<string>("class");
+
+    public string Class(string always) => string.Join(' ', always, Class());
+
     public object? TryGetAttribute(string key)
         => Attributes?.TryGetValue(key, out var value) is true ? value : null;
 
     public T? TryGetAttribute<T>(string key)
-        => TryGetAttribute(key) is T  v ? v : default;
+        => TryGetAttribute(key) is T v ? v : default;
 
     public bool TryGetAttribute(string key, out object attribute)
     {
@@ -64,10 +73,4 @@ public abstract class CoreComponent : IgnisComponentBase, IDisposable
         }
         GC.SuppressFinalize(this);
     }
-
-    //public Task HandleEventAsync(EventCallbackWorkItem item, object? arg)
-    //{
-    //    Update();
-    //    return Task.CompletedTask;
-    //}
 }

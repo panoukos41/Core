@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Components;
 using System.Reactive.Linq;
 
-namespace Core.Blazor.Components;
+namespace Core.Blazor;
 
 public abstract class CoreRxComponent<TRxObject> : CoreComponent where TRxObject : RxObject
 {
@@ -10,8 +10,6 @@ public abstract class CoreRxComponent<TRxObject> : CoreComponent where TRxObject
 
     [Parameter, EditorRequired]
     public virtual TRxObject? ViewModel { get; set; }
-
-    //protected override bool ShouldRender => ViewModel is not null;
 
     protected sealed override void OnUpdate()
     {
@@ -29,30 +27,4 @@ public abstract class CoreRxComponent<TRxObject> : CoreComponent where TRxObject
                 .DisposeWith(Disposables);
         }
     }
-
-    //protected override void OnInitialized()
-    //{
-    //    changedSub = ViewModel?.WhenPropertyChanged.Subscribe(_ => StateHasChanged());
-    //}
-
-    //protected override void OnParametersSet()
-    //{
-    //    if (ViewModel is null)
-    //    {
-    //        changedSub?.Dispose();
-    //        changedSub = null;
-    //    }
-    //    else if (ViewModel is { } && changedSub is null)
-    //    {
-    //        changedSub = ViewModel.WhenPropertyChanged.Subscribe(_ => StateHasChanged());
-    //        DisposeWith(changedSub);
-    //    }
-    //}
-
-    //protected override void BuildRenderTree(RenderTreeBuilder builder)
-    //{
-    //    if (!ShouldRender) return;
-
-    //    base.BuildRenderTree(builder);
-    //}
 }
