@@ -1,0 +1,33 @@
+@inherits RxInputBase<bool>
+
+@if (!string.IsNullOrEmpty(Label))
+{
+    <label for="@Id">@Label</label>
+}
+@if (Read)
+{
+    <p>@(FormControl.Value ? "Yes" : "No")</p>
+}
+else
+{
+    <div>
+        <input
+            id="@Id"
+            class="max-w-fit"
+            type="checkbox"
+            @bind-value="Checked"
+        />
+    </div>
+}
+@if (HideErrors)
+{
+    <RxOutputErrors Control="FormControl" />
+}
+
+@code {
+    private bool Checked
+    {
+        get => FormControl.Value;
+        set => FormControl.Value = value;
+    }
+}
