@@ -4,12 +4,12 @@ using System.Reactive.Linq;
 
 namespace Core.Blazor;
 
-public abstract class CoreRxComponent<TRxObject> : CoreComponent where TRxObject : RxObject
+public abstract class CoreRxComponent<TRxObject> : CoreComponent where TRxObject : notnull, RxObject
 {
     private IDisposable? changedSub;
 
     [Parameter, EditorRequired]
-    public virtual TRxObject? ViewModel { get; set; }
+    public virtual TRxObject ViewModel { get; set; } = null!;
 
     protected sealed override void OnUpdate()
     {
