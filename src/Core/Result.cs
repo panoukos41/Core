@@ -167,9 +167,9 @@ public sealed class ResultJsonConverter : JsonConverterFactory
             }
             else if (reader.ValueTextEquals(Er.EncodedUtf8Bytes))
             {
-                var er = JsonSerializer.Deserialize<Result<T>.Er>(ref readerAtStart, options);
-                result = er is { } ? er
-                    : new JsonException("Could not deserialize 'OK' object because it was null.");
+                var problem = JsonSerializer.Deserialize<Problem>(ref readerAtStart, options);
+                result = problem is { } ? problem
+                    : new JsonException("Could not deserialize 'ER' object because it was null.");
             }
             else
             {
@@ -184,11 +184,11 @@ public sealed class ResultJsonConverter : JsonConverterFactory
             var ok = value is Result<T>.Ok;
             var e = ok
                 ? JsonSerializer.SerializeToElement(((Result<T>.Ok)value).Value, options)
-                : JsonSerializer.SerializeToElement((Result<T>.Er)value, options);
+                : JsonSerializer.SerializeToElement(((Result<T>.Er)value).Problem, options);
 
             writer.WriteStartObject();
             writer.WriteString(Result, ok ? Ok : Er);
-            if (e.ValueKind is JsonValueKind.Object or JsonValueKind.Array)
+            if (e.ValueKind is JsonValueKind.Object)
             {
                 foreach (var obj in e.EnumerateObject())
                 {
