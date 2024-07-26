@@ -34,6 +34,8 @@ public abstract class CoreComponent : IgnisComponentBase, IDisposable
 
     public string Class(string always) => string.Join(' ', always, Class());
 
+    public bool Disabled() => TryGetAttribute<bool>("disabled");
+
     public object? TryGetAttribute(string key)
         => Attributes?.TryGetValue(key, out var value) is true ? value : null;
 
