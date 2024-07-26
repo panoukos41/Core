@@ -11,7 +11,10 @@ public static class Options
         PropertyNameCaseInsensitive = true,
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault,
         //ReferenceHandler = ReferenceHandler.IgnoreCycles,
-        Converters = { new ResultJsonConverter() }
+        Converters = { 
+            new JsonStringEnumConverter(),
+            new ResultJsonConverter(),
+        }
     };
 
     public static void Apply(JsonSerializerOptions options)

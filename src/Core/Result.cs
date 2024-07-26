@@ -22,7 +22,8 @@ public interface IResultUnion
     bool IsEr([NotNullWhen(true)] out Problem? problem);
 }
 
-[Union, JsonConverter(typeof(ResultJsonConverter))]
+[Union]
+[JsonConverter(typeof(ResultJsonConverter))]
 public abstract partial record Result<T> : IResultUnion where T : notnull
 {
     public static implicit operator Result<T>(Exception ex) => new Er(ex);
@@ -31,8 +32,10 @@ public abstract partial record Result<T> : IResultUnion where T : notnull
 
     public static IResultUnion CreateEr(Problem problem) => new Result<T>.Er(problem);
 
+    [JsonConverter(typeof(ResultJsonConverter))]
     public partial record Ok(T Value);
 
+    [JsonConverter(typeof(ResultJsonConverter))]
     public partial record Er(Problem Problem);
 
     public bool IsOk() => this is Result<T>.Ok;
@@ -109,25 +112,119 @@ public abstract partial record Result<T> : IResultUnion where T : notnull
     );
 }
 
+public static class Result
+{
+    public static Result<TResult> Run<TResult>(this Func<TResult> func) where TResult : notnull
+    {
+        try
+        {
+            return func();
+        }
+        catch (Exception ex)
+        {
+            return ex;
+        }
+    }
+
+    public static Result<TResult> Run<TState, TResult>(TState state, Func<TState, TResult> func) where TResult : notnull
+    {
+        try
+        {
+            return func(state);
+        }
+        catch (Exception ex)
+        {
+            return ex;
+        }
+    }
+
+    public static async Task<Result<TResult>> RunAsync<TResult>(Func<Task<TResult>> func) where TResult : notnull
+    {
+        try
+        {
+            return await func();
+        }
+        catch (Exception ex)
+        {
+            return ex;
+        }
+    }
+
+    public static async Task<Result<TResult>> RunAsync<TState, TResult>(TState state, Func<TState, Task<TResult>> func) where TResult : notnull
+    {
+        try
+        {
+            return await func(state);
+        }
+        catch (Exception ex)
+        {
+            return ex;
+        }
+    }
+
+    public static Result<TResult> Chain<TResult>(this Result<TResult> result, Func<TResult, Result<TResult>> chain) where TResult : notnull
+    {
+        return result.Match(chain, static (chain, ok) => chain(ok.Value), static (_, er) => er);
+    }
+
+    public static Result<TResult> Chain<TInitial, TResult>(this Result<TInitial> result, Func<TInitial, Result<TResult>> chain)
+        where TInitial : notnull
+        where TResult : notnull
+    {
+        return result.Match(chain, static (chain, ok) => chain(ok.Value), static (_, er) => er.Problem);
+    }
+
+    public static Result<TResult> Chain<TInitial, TResult, TState>(this Result<TInitial> result, TState state, Func<TState, TInitial, Result<TResult>> chain)
+        where TInitial : notnull
+        where TResult : notnull
+    {
+        return result.Match((state, chain), static (tuple, ok) => tuple.chain(tuple.state, ok.Value), static (_, er) => er.Problem);
+    }
+
+
+    public static Result<TResult> ChainAsync<TResult>(this Result<TResult> result, Func<TResult, Result<TResult>> chain) where TResult : notnull
+    {
+        return result.Match(chain, static (chain, ok) => chain(ok.Value), static (_, er) => er);
+    }
+
+    public static Result<TResult> ChainAsync<TInitial, TResult>(this Result<TInitial> result, Func<TInitial, Result<TResult>> chain)
+        where TInitial : notnull
+        where TResult : notnull
+    {
+        return result.Match(chain, static (chain, ok) => chain(ok.Value), static (_, er) => er.Problem);
+    }
+
+    public static Result<TResult> ChainAsync<TInitial, TResult, TState>(this Result<TInitial> result, TState state, Func<TState, TInitial, Result<TResult>> chain)
+        where TInitial : notnull
+        where TResult : notnull
+    {
+        return result.Match((state, chain), static (tuple, ok) => tuple.chain(tuple.state, ok.Value), static (_, er) => er.Problem);
+    }
+}
+
 public sealed class ResultJsonConverter : JsonConverterFactory
 {
     private static readonly Type ResultType = typeof(Result<>);
     private static readonly Type converterType = typeof(Converter<>);
 
+    /// <inheritdoc/>
     public override bool CanConvert(Type typeToConvert)
     {
-        return typeToConvert.IsGenericType
-            && typeToConvert.GetGenericTypeDefinition() == ResultType;
+        return typeToConvert.IsGenericType && typeToConvert.GetGenericTypeDefinition().IsAssignableFrom(ResultType)
+            || typeToConvert.BaseType is { IsGenericType: true } baseType && baseType.GetGenericTypeDefinition().IsAssignableFrom(ResultType);
     }
 
+    /// <inheritdoc/>
     public override JsonConverter? CreateConverter(Type typeToConvert, JsonSerializerOptions options)
     {
         var type = typeToConvert.GetGenericArguments()[0];
         var converter = converterType.MakeGenericType(type);
 
-        return (JsonConverter)Activator.CreateInstance(converter)!;
+        var instance = (JsonConverter)Activator.CreateInstance(converter)!;
+        return instance;
     }
 
+    /// <inheritdoc/>
     private class Converter<T> : JsonConverter<Result<T>>
         where T : notnull
     {
@@ -136,9 +233,11 @@ public sealed class ResultJsonConverter : JsonConverterFactory
         private static readonly JsonEncodedText Ok = JsonEncodedText.Encode("ok");
         private static readonly JsonEncodedText Er = JsonEncodedText.Encode("er");
 
+        /// <inheritdoc/>
         public override Result<T>? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             var readerAtStart = reader;
+            // "$result" name check
             reader.Read();
             if (reader.TokenType != JsonTokenType.PropertyName ||
                 !reader.ValueTextEquals(Result.EncodedUtf8Bytes))
@@ -148,16 +247,20 @@ public sealed class ResultJsonConverter : JsonConverterFactory
 
             reader.Read();
             Result<T>? result;
-            if (reader.ValueTextEquals(Ok.EncodedUtf8Bytes))
+            // "$result" value check (ok or er)
+            if (reader.TokenType is JsonTokenType.String && reader.ValueTextEquals(Ok.EncodedUtf8Bytes))
             {
                 reader.Read();
-                if (reader.ValueTextEquals(Value.EncodedUtf8Bytes))
+                // check if next type is property with name "$value"
+                // if yes deserialize that object to T
+                if (reader.TokenType is JsonTokenType.PropertyName && reader.ValueTextEquals(Value.EncodedUtf8Bytes))
                 {
                     reader.Read();
                     var ok = JsonSerializer.Deserialize<T>(ref reader, options);
                     result = ok is { } ? ok
                         : new JsonException("Could not deserialize 'OK' $value because it was null.");
                 }
+                // it's the same object deserialize whole.
                 else
                 {
                     var ok = JsonSerializer.Deserialize<T>(ref readerAtStart, options);
@@ -165,7 +268,7 @@ public sealed class ResultJsonConverter : JsonConverterFactory
                         : new JsonException("Could not deserialize 'OK' object because it was null.");
                 }
             }
-            else if (reader.ValueTextEquals(Er.EncodedUtf8Bytes))
+            else if (reader.TokenType is JsonTokenType.String && reader.ValueTextEquals(Er.EncodedUtf8Bytes))
             {
                 var problem = JsonSerializer.Deserialize<Problem>(ref readerAtStart, options);
                 result = problem is { } ? problem
@@ -179,6 +282,7 @@ public sealed class ResultJsonConverter : JsonConverterFactory
             return result;
         }
 
+        /// <inheritdoc/>
         public override void Write(Utf8JsonWriter writer, Result<T> value, JsonSerializerOptions options)
         {
             var ok = value is Result<T>.Ok;

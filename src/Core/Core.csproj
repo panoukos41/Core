@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Dunet" Version="1.11.2" PrivateAssets="all" />
+    <PackageReference Include="Dunet" Version="1.11.2" />
     <PackageReference Include="FluentValidation" Version="11.9.1" />
     <PackageReference Include="Mediator.Abstractions" Version="2.1.7" />
     <PackageReference Include="Serilog" Version="4.0.0" />
