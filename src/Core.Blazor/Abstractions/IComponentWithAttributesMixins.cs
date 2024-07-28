@@ -11,7 +11,9 @@ public static class IComponentWithAttributesMixins
 
     public static string Class(this IComponentWithAttributes component, string always)
     {
-        return string.Join(' ', always, component.Class());
+        var componentClass = component.Class();
+
+        return componentClass is null ? always : $"{always} {componentClass}";
     }
 
     public static bool Disabled(this IComponentWithAttributes component)

@@ -25,12 +25,17 @@ public abstract class CoreComponent : IgnisComponentBase, IComponentWithAttribut
         disposables.Value.Add(disposable);
     }
 
-    public virtual void Dispose()
+    protected virtual void OnDispose()
+    {
+    }
+
+    public void Dispose()
     {
         if (disposables.IsValueCreated)
         {
             disposables.Value.Dispose();
         }
+        OnDispose();
         GC.SuppressFinalize(this);
     }
 }

@@ -5,19 +5,16 @@
 @inherits Ignis.Components.IgnisComponentBase
 @implements IDisposable
 
-@* @if (Control?.Errors?.Count is > 0 || Errors?.Count is > 0) *@
 @if (GetErrors() is { Count: > 0 } errors)
 {
-    @* foreach(var error in Control?.Errors ?? Errors ?? []) *@
     foreach(var error in errors)
     {
-        <div class="errors flex items-center gap-1">
+        <div class="error flex items-center gap-1">
             <!-- Icon -->
-            @* <i class="icon-warning text-red-500 text-sm me-2"></i> *@
-            <i class="text-white text-sm me-2 bg-red-500 rounded-full w-4 h-4">!</i>
+            @* <i class="bg-red-500 rounded-full w-4 h-4"></i> *@
 
             <!-- Translation -->
-            <small class="error">@error.Key</small>
+            <small>@error.Key</small>
             <!-- <small>{{'errors.' + error.key | translate}} </small> -->
 
             <!-- Special values -->

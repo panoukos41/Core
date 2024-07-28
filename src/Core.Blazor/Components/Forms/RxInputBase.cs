@@ -1,12 +1,12 @@
-﻿using Core.Blazor.Reactive.Forms;
+﻿using Core.Abstractions;
+using Core.Blazor.Reactive.Forms;
 using Core.Blazor.Reactive.Forms.Events;
 using Core.Blazor.Reactive.Forms.Primitives;
-using Ignis.Components;
 using Microsoft.AspNetCore.Components;
 
 namespace Core.Components.Forms;
 
-public abstract class RxInputBase<T> : IgnisComponentBase, IDisposable where T : IParsable<T>
+public abstract class RxInputBase<T> : CoreComponent, IDisposable where T : IParsable<T>
 {
     private FormControl<T>? __formControl;
     private IDisposable? subscription;
@@ -30,20 +30,14 @@ public abstract class RxInputBase<T> : IgnisComponentBase, IDisposable where T :
         }
     }
 
-    public string CssClass => FormControl.Status switch
+    public string? CssClass => FormControl.Status switch
     {
-        ControlStatus.Valid => Class("valid"),
-        ControlStatus.Pending => Class("pending"),
-        ControlStatus.Invalid => Class("invalid"),
-        ControlStatus.Disabled => Class("disabled"),
-        _ => string.Empty
+        ControlStatus.Valid => this.Class("valid"),
+        ControlStatus.Pending => this.Class("pending"),
+        ControlStatus.Invalid => this.Class("invalid"),
+        ControlStatus.Disabled => this.Class("disabled"),
+        _ => null
     };
-
-    /// <summary>
-    /// Gets or sets a collection of additional attributes that will be applied to the created element.
-    /// </summary>
-    [Parameter(CaptureUnmatchedValues = true)]
-    public IDictionary<string, object?>? Attributes { get; set; }
 
     [CascadingParameter]
     public FormGroup? FormGroupParent { get; set; }
@@ -145,21 +139,10 @@ public abstract class RxInputBase<T> : IgnisComponentBase, IDisposable where T :
         }
     }
 
-    public void Dispose()
+    protected override void OnDispose()
     {
         FormGroupParent?.Remove(Id);
         subscription?.Dispose();
         subscription = null;
-        GC.SuppressFinalize(this);
     }
-
-    private string Class(string always) => string.Join(' ', always, Class());
-
-    public string? Class() => TryGetAttribute<string>("class");
-
-    public object? TryGetAttribute(string key)
-        => Attributes?.TryGetValue(key, out var value) is true ? value : null;
-
-    public TAttribute? TryGetAttribute<TAttribute>(string key)
-        => TryGetAttribute(key) is TAttribute v ? v : default;
 }
