@@ -9,13 +9,15 @@ using System.Reactive.Subjects;
 
 namespace Core.Blazor.Reactive.Forms;
 
-internal class FormArray : AbstractControl, IList<AbstractControl>, IReadOnlyCollection<AbstractControl>
+public class FormArray : AbstractControl, IList<AbstractControl>, IReadOnlyCollection<AbstractControl>
 {
     private readonly ValueChangeEvent cachedValueChanged;
     private readonly Subject<ControlEvent> aggregatedEventsSubject = new();
     private readonly List<AbstractControlEntry> controls = [];
 
     public override object? RawValue => this;
+
+    public override bool HasValue { get; } = true;
 
     public FormArray()
     {

@@ -17,6 +17,8 @@ public sealed class FormGroup : AbstractControl, IDictionary<string, AbstractCon
 
     public override object? RawValue => this;
 
+    public override bool HasValue { get; } = true;
+
     public FormGroup()
     {
         cachedValueChanged = new ValueChangeEvent(this);
@@ -69,11 +71,6 @@ public sealed class FormGroup : AbstractControl, IDictionary<string, AbstractCon
     public T? Get<T>(string id) where T : AbstractControl
     {
         return controls.TryGetValue(id, out var v) ? (T)v.Control : null;
-    }
-
-    public AbstractControl<T>? GetControl<T>(string id)
-    {
-        return controls.TryGetValue(id, out var v) ? v.Control as AbstractControl<T> : null;
     }
 
     public bool TryGet<T>(string id, [MaybeNullWhen(false)] out T? control) where T : AbstractControl

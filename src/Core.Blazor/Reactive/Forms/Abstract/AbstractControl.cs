@@ -35,6 +35,23 @@ public abstract class AbstractControl : IDisposable
         _validatorsAsync = new(static () => []);
     }
 
+    /// <summary>
+    /// Initialize the AbstractControl instance with validators.
+    /// </summary>
+    protected AbstractControl(
+        IEnumerable<ValidatorFn>? sync = null,
+        IEnumerable<ValidatorFnAsync>? async = null) : this()
+    {
+        foreach (var v in sync ?? [])
+        {
+            AddValidator(v);
+        }
+        foreach (var v in async ?? [])
+        {
+            AddValidator(v);
+        }
+    }
+
     public virtual void Dispose()
     {
         CancelValidation();
@@ -45,6 +62,8 @@ public abstract class AbstractControl : IDisposable
     }
 
     public abstract object? RawValue { get; }
+
+    public abstract bool HasValue { get; }
 
     /// <summary>
     /// A control is 'enabled' as long as its 'status' is not 'DISABLED'.
@@ -144,7 +163,7 @@ public abstract class AbstractControl : IDisposable
     /// the UI or programmatically.It also emits an event each time you call enable() or disable()
     /// without passing along {emitEvent: false} as a function argument.
     /// </summary>
-    public virtual IObservable<ValueChangeEvent> ValueChanges { get; }
+    public IObservable<ValueChangeEvent> ValueChanges { get; }
 
     public bool Is<T>([NotNullWhen(true)] out AbstractControl<T>? control)
     {
@@ -512,15 +531,23 @@ public abstract class AbstractControl<T> : AbstractControl, IDisposable
 {
     private T? _value;
 
-    /// <summary>
-    /// Initialize the AbstractControl instance.
-    /// </summary>
+    public new IObservable<ValueChangeEvent<T>> ValueChanges { get; }
+
+    /// <inheritdoc/>
     protected AbstractControl()
     {
         ValueChanges = eventsSubject.OfType<ValueChangeEvent<T>>();
     }
 
+    /// <inheritdoc/>
+    protected AbstractControl(IEnumerable<ValidatorFn>? sync = null, IEnumerable<ValidatorFnAsync>? async = null) : base(sync, async)
+    {
+        ValueChanges = eventsSubject.OfType<ValueChangeEvent<T>>();
+    }
+
     public override object? RawValue => Value;
+
+    public override bool HasValue => Value is { };
 
     public T? Value
     {
@@ -532,6 +559,4 @@ public abstract class AbstractControl<T> : AbstractControl, IDisposable
             Validate();
         }
     }
-
-    public override IObservable<ValueChangeEvent<T>> ValueChanges { get; }
 }

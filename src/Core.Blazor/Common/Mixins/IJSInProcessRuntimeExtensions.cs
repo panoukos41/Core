@@ -1,6 +1,4 @@
-﻿using Microsoft.JSInterop;
-
-namespace Core.Blazor;
+﻿namespace Microsoft.JSInterop;
 
 public static class IJSInProcessRuntimeExtensions
 {
@@ -9,7 +7,7 @@ public static class IJSInProcessRuntimeExtensions
     /// </summary>
     public static string? GetBrowserLang(this IJSInProcessRuntime? js)
     {
-        var language = GetBrowserCulture(js);
+        var language = js.GetBrowserCulture();
         if (language is null) return null;
 
         if (language.Contains('-'))

@@ -4,7 +4,7 @@ using Core.Blazor.Reactive.Forms.Primitives;
 using Ignis.Components;
 using Microsoft.AspNetCore.Components;
 
-namespace Core.Blazor.RxForms;
+namespace Core.Components.Forms;
 
 public abstract class RxInputBase<T> : IgnisComponentBase, IDisposable where T : IParsable<T>
 {
@@ -116,7 +116,7 @@ public abstract class RxInputBase<T> : IgnisComponentBase, IDisposable where T :
             FormControl.Value = Value;
         }
         // Update validators based on component.
-        if (Validators?.SetEquals(FormControl.Validators) is false)
+        if (Validators is { } && Validators.SetEquals(FormControl.Validators) is false)
         {
             var toRemove = FormControl.Validators.Except(Validators);
             foreach (var validator in toRemove)
@@ -130,7 +130,7 @@ public abstract class RxInputBase<T> : IgnisComponentBase, IDisposable where T :
             FormControl.Validate();
         }
         // Update validators based on component.
-        if (ValidatorsAsync?.SetEquals(FormControl.ValidatorsAsync) is false)
+        if (ValidatorsAsync is { } && ValidatorsAsync.SetEquals(FormControl.ValidatorsAsync) is false)
         {
             var toRemove = FormControl.ValidatorsAsync.Except(ValidatorsAsync);
             foreach (var validator in toRemove)

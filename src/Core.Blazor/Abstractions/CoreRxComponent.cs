@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Components;
 using System.Reactive.Linq;
 
-namespace Core.Blazor;
+namespace Core.Abstractions;
 
 public abstract class CoreRxComponent<TRxObject> : CoreComponent where TRxObject : notnull, RxObject
 {
@@ -11,7 +11,8 @@ public abstract class CoreRxComponent<TRxObject> : CoreComponent where TRxObject
     [Parameter, EditorRequired]
     public virtual TRxObject ViewModel { get; set; } = null!;
 
-    protected sealed override void OnUpdate()
+    //protected override void OnParametersSet()
+    protected override void OnUpdate()
     {
         if (ViewModel is null && changedSub is not null)
         {
@@ -23,7 +24,7 @@ public abstract class CoreRxComponent<TRxObject> : CoreComponent where TRxObject
         {
             changedSub = ViewModel.WhenPropertyChanged
                 .Throttle(TimeSpan.FromMilliseconds(50))
-                .Subscribe(_ => Update())
+                .Subscribe(_ => TriggerUpdate())
                 .DisposeWith(Disposables);
         }
     }

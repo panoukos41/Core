@@ -1,17 +1,16 @@
 ﻿using Core.Blazor.Reactive.Forms.Abstract;
-using Core.Blazor.Reactive.Forms.Events;
 using Core.Blazor.Reactive.Forms.Primitives;
-using System.Reactive.Linq;
 
 namespace Core.Blazor.Reactive.Forms;
 
 public sealed class FormControl<TValue> : AbstractControl<TValue> where TValue : IParsable<TValue>
 {
-    public override IObservable<ValueChangeEvent<TValue>> ValueChanges { get; }
-
-    public FormControl() : base()
+    public FormControl()
     {
-        ValueChanges = Events.OfType<ValueChangeEvent<TValue>>();
+    }
+
+    public FormControl(IEnumerable<ValidatorFn>? sync = null, IEnumerable<ValidatorFnAsync>? async = null) : base(sync, async)
+    {
     }
 
     /// <inheritdoc/>
@@ -25,6 +24,9 @@ public sealed class FormControl<TValue> : AbstractControl<TValue> where TValue :
         };
     }
 
+    /// <summary>
+    /// Set raw string value like values provided from input controls.
+    /// </summary>
     public void SetRawValue(string? rawValue)
     {
         if (rawValue is null)
@@ -44,10 +46,9 @@ public sealed class FormControl<TValue> : AbstractControl<TValue> where TValue :
     /// </summary>
     public void Reset(TValue? value)
     {
-        SetStatus(ControlStatus.Valid);
-        Enable();
         MarkAsPristine();
         MarkAsUnTouched();
+        Enable();
         Value = value;
     }
 }

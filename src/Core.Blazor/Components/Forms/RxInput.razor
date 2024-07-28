@@ -1,0 +1,52 @@
+@inherits RxInputBase<T>
+@typeparam T where T : IParsable<T>
+
+@if (!string.IsNullOrEmpty(Label))
+{
+    <label for="@Id">@Label</label>
+}
+@if (Read)
+{
+    <p>@FormControl.GetFormatted()</p>
+}
+else if (Type is "textarea")
+{
+    <textarea
+        @attributes="Attributes"
+        id="@Id"
+        value="@FormControl.GetFormatted()"
+        disabled="@FormControl.Disabled"
+        class="@CssClass"
+        placeholder="@(Label ?? string.Empty)"
+        @oninput="OnChange"
+        @onblur="() => FormControl.MarkAsTouched()"
+    />
+}
+else
+{
+    <input
+        @attributes="Attributes"
+        id="@Id"
+        type="@Type"
+        value="@FormControl.GetFormatted()"
+        disabled="@FormControl.Disabled"
+        class="@CssClass"
+        placeholder="@(Label ?? string.Empty)"
+        @oninput="OnChange"
+        @onblur="() => FormControl.MarkAsTouched()"
+    />
+}
+@if (HideErrors is false)
+{
+    <RxOutputErrors Control="FormControl" />
+}
+
+@code {
+    [Parameter]
+    public string Type { get; set; } = "text";
+
+    private void OnChange(ChangeEventArgs args)
+    {
+        FormControl.SetRawValue(args.Value as string);
+    }
+}
