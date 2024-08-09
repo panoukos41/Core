@@ -30,7 +30,7 @@ public abstract partial record Result<T> : IResultUnion where T : notnull
 
     public static IResultUnion CreateOk<TOk>(TOk value) where TOk : notnull => new Result<TOk>.Ok(value);
 
-    public static IResultUnion CreateEr(Problem problem) => new Result<T>.Er(problem);
+    public static IResultUnion CreateEr(Problem problem) => new Er(problem);
 
     [JsonConverter(typeof(ResultJsonConverter))]
     public partial record Ok(T Value);
@@ -38,12 +38,12 @@ public abstract partial record Result<T> : IResultUnion where T : notnull
     [JsonConverter(typeof(ResultJsonConverter))]
     public partial record Er(Problem Problem);
 
-    public bool IsOk() => this is Result<T>.Ok;
+    public bool IsOk() => this is Ok;
 
     public bool IsOk([NotNullWhen(true)] out T? value)
     {
         value = default;
-        if (this is Result<T>.Ok ok)
+        if (this is Ok ok)
         {
             value = ok.Value;
             return true;
@@ -56,16 +56,16 @@ public abstract partial record Result<T> : IResultUnion where T : notnull
         Unsafe.SkipInit(out problem);
         if (IsOk(out value)) return true;
 
-        problem = ((Result<T>.Er)this).Problem;
+        problem = ((Er)this).Problem;
         return false;
     }
 
-    public bool IsEr() => this is Result<T>.Er;
+    public bool IsEr() => this is Er;
 
     public bool IsEr([NotNullWhen(true)] out Problem? problem)
     {
         Unsafe.SkipInit(out problem);
-        if (this is Result<T>.Er er)
+        if (this is Er er)
         {
             problem = er.Problem;
             return true;
@@ -78,22 +78,24 @@ public abstract partial record Result<T> : IResultUnion where T : notnull
         Unsafe.SkipInit(out value);
         if (IsEr(out problem)) return true;
 
-        value = ((Result<T>.Ok)this).Value;
+        value = ((Ok)this).Value;
         return false;
     }
 
     public virtual bool Equals(Result<T>? other)
     {
-        if (this is Result<T>.Ok ok &&
-            other is Result<T>.Ok okOther)
+        if (this is Ok ok &&
+            other is Ok okOther)
         {
             return EqualityComparer<T>.Default.Equals(ok.Value, okOther.Value);
         }
 
-        var er = (Result<T>.Er)this;
-        var erOther = other as Result<T>.Er;
+        var er = this as Er;
+        var erOther = other as Er;
 
-        return er.Problem == erOther?.Problem;
+        return er is { }
+            && erOther is { }
+            && er.Problem == erOther.Problem;
     }
 
     public virtual bool Equals(T? other)
@@ -107,8 +109,8 @@ public abstract partial record Result<T> : IResultUnion where T : notnull
     }
 
     public override int GetHashCode() => Match(
-        static ok => ok.Value.GetHashCode(),
-        static er => er.Problem.GetHashCode()
+        static ok => HashCode.Combine(ok.Value.GetHashCode()),
+        static er => HashCode.Combine(er.Problem.GetHashCode())
     );
 }
 
@@ -285,16 +287,16 @@ public sealed class ResultJsonConverter : JsonConverterFactory
         /// <inheritdoc/>
         public override void Write(Utf8JsonWriter writer, Result<T> value, JsonSerializerOptions options)
         {
-            var ok = value is Result<T>.Ok;
-            var e = ok
-                ? JsonSerializer.SerializeToElement(((Result<T>.Ok)value).Value, options)
-                : JsonSerializer.SerializeToElement(((Result<T>.Er)value).Problem, options);
-
             writer.WriteStartObject();
-            writer.WriteString(Result, ok ? Ok : Er);
-            if (e.ValueKind is JsonValueKind.Object)
+            writer.WriteString(Result, value.IsOk() ? Ok : Er);
+
+            var json = value.Match(options,
+                static (options, ok) => JsonSerializer.SerializeToElement(ok.Value, options),
+                static (options, er) => JsonSerializer.SerializeToElement(er.Problem, options)
+            );
+            if (json.ValueKind is JsonValueKind.Object)
             {
-                foreach (var obj in e.EnumerateObject())
+                foreach (var obj in json.EnumerateObject())
                 {
                     obj.WriteTo(writer);
                 }
@@ -302,7 +304,7 @@ public sealed class ResultJsonConverter : JsonConverterFactory
             else
             {
                 writer.WritePropertyName(Value);
-                e.WriteTo(writer);
+                json.WriteTo(writer);
             }
             writer.WriteEndObject();
         }
