@@ -13,6 +13,7 @@ public abstract class RxObject :
     IWhenPropertyChanged,
     INotifyPropertyChanging,
     INotifyPropertyChanged,
+    IDisposeWith,
     IDisposable
 {
     private readonly Lazy<Subject<Problem>> problemSubject = new(static () => new());
@@ -40,10 +41,8 @@ public abstract class RxObject :
     /// </summary>
     protected CompositeDisposable Disposables => disposables.Value;
 
-    /// <summary>
-    /// Add a disposable to the <see cref="Disposables"/> list.
-    /// </summary>
-    protected void DisposeWith(IDisposable disposable)
+    /// <inheritdoc/>
+    public void DisposeWith(IDisposable disposable)
     {
         disposables.Value.Add(disposable);
     }
@@ -87,7 +86,7 @@ public abstract class RxObject :
     /// Notify subscribers that a property is changing.
     /// </summary>
     /// <param name="propertyName">The name of the property.</param>
-    protected void RaisePropertyChanging([CallerMemberName] string? propertyName = null)
+    public void RaisePropertyChanging([CallerMemberName] string? propertyName = null)
     {
         if (propertyName is not { Length: > 0 }) return;
 
@@ -99,12 +98,41 @@ public abstract class RxObject :
     /// Notify subscribers that a property has changed.
     /// </summary>
     /// <param name="propertyName">The name of the property.</param>
-    protected void RaisePropertyChanged([CallerMemberName] string? propertyName = null)
+    public void RaisePropertyChanged([CallerMemberName] string? propertyName = null)
     {
         if (propertyName is not { Length: > 0 }) return;
 
         ChangedHandler?.Invoke(this, new(propertyName));
         changedSubject.OnNext(new PropertyChanged(this, propertyName));
+    }
+
+    /// <summary>
+    /// Notify subscribers that properties are changing.
+    /// </summary>
+    /// <param name="propertyNames">The names of the properties.</param>
+    public void RaisePropertiesChanging(params string[] propertyNames)
+    {
+        if (propertyNames.Length is 0) return;
+
+        foreach (var name in propertyNames)
+        {
+            RaisePropertyChanging(name);
+        }
+    }
+
+    /// <summary>
+    /// Notify subscribers that a properties have changed.
+    /// </summary>
+    /// <param name="propertyNames">The names of the properties.</param>
+    public void RaisePropertiesChanged(params string[] propertyNames)
+    {
+        if (propertyNames.Length is 0) return;
+
+
+        foreach (var name in propertyNames)
+        {
+            RaisePropertyChanged(name);
+        }
     }
 
     #endregion
