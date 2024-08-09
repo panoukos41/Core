@@ -8,24 +8,24 @@ public abstract class CoreRxComponent<TRxObject> : CoreComponent where TRxObject
 {
     private IDisposable? changedSub;
 
-    [Parameter, EditorRequired]
-    public virtual TRxObject ViewModel { get; set; } = null!;
+    private TRxObject viewModel = null!;
 
-    //protected override void OnParametersSet()
-    protected override void OnUpdate()
+    [Parameter, EditorRequired]
+    public virtual TRxObject ViewModel
     {
-        if (ViewModel is null && changedSub is not null)
-        {
-            Disposables.Remove(changedSub!);
-            changedSub?.Dispose();
-            changedSub = null;
-        }
-        else if (ViewModel is { } && changedSub is null)
-        {
-            changedSub = ViewModel.WhenPropertyChanged
+        get => viewModel;
+        set {
+            viewModel = value;
+            if (changedSub is { })
+            {
+                Disposables.Remove(changedSub);
+                changedSub.Dispose();
+                changedSub = null;
+            }
+            changedSub = viewModel.WhenPropertyChanged
                 .Throttle(TimeSpan.FromMilliseconds(50))
                 .Subscribe(_ => TriggerUpdate())
-                .DisposeWith(Disposables);
+                .DisposeWith(this);
         }
     }
 }
