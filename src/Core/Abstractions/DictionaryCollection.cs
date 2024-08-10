@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Core.Abstractions;
 
@@ -22,6 +23,11 @@ public abstract class DictionaryCollection<TKey, TItem> : ICollection<TItem>
     {
         var key = GetKeyForItem(item);
         return dictionary.ContainsKey(key);
+    }
+
+    public bool TryGet(TKey key, [MaybeNullWhen(false)] out TItem item)
+    {
+        return dictionary.TryGetValue(key, out item);
     }
 
     public void Add(TItem item)
