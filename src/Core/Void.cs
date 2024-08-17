@@ -1,12 +1,11 @@
-﻿using FluentValidation;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Core.Abstractions;
+namespace Core;
 
-public sealed class IValidTests
+public readonly struct Void
 {
 }
