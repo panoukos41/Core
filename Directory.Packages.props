@@ -7,18 +7,18 @@
   <!-- Packagges -->
   <ItemGroup>
     <PackageVersion Include="Dunet" Version="1.11.2" />
-    <PackageVersion Include="FluentValidation" Version="11.9.2" />
+    <PackageVersion Include="FluentValidation" Version="11.10.0" />
     <PackageVersion Include="Ignis.Components" Version="1.4.0" />
     <PackageVersion Include="Mediator.Abstractions" Version="2.1.7" />
-    <PackageVersion Include="Microsoft.AspNetCore.Components.Web" Version="8.0.8" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.Web" Version="8.0.10" />
     <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.0.0" />
-    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.1" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.2" />
     <PackageVersion Include="Microsoft.Extensions.Options" Version="8.0.2" />
     <PackageVersion Include="MongoDB.Driver" Version="2.28.0" />
-    <PackageVersion Include="Serilog" Version="4.0.1" />
-    <PackageVersion Include="Serilog.AspNetCore" Version="8.0.2" />
-    <PackageVersion Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.7.0" />
-    <PackageVersion Include="Swashbuckle.AspNetCore.SwaggerUI" Version="6.7.0" />
+    <PackageVersion Include="Serilog" Version="4.0.2" />
+    <PackageVersion Include="Serilog.AspNetCore" Version="8.0.3" />
+    <PackageVersion Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.8.1" />
+    <PackageVersion Include="Swashbuckle.AspNetCore.SwaggerUI" Version="6.8.1" />
     <PackageVersion Include="System.Reactive" Version="6.0.1" />
   </ItemGroup>
   <!---->
@@ -34,7 +34,7 @@
   <!-- Versioning & SourceLink -->
   <ItemGroup>
     <GlobalPackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
-    <GlobalPackageReference Include="Nerdbank.GitVersioning" Version="3.6.141" />
+    <GlobalPackageReference Include="Nerdbank.GitVersioning" Version="3.6.143" />
   </ItemGroup>
   <!---->
 </Project>
