@@ -18,11 +18,11 @@ public abstract class PreferenceValueBuilderBase : PreferenceBuilderBase
 }
 
 public abstract class PreferenceValueBuilderBase<TValue> : PreferenceValueBuilderBase
-    where TValue : IParsable<TValue>, new()
+    where TValue : notnull, IParsable<TValue>, new()
 {
     public new TValue DefaultValue
     {
-        get => string.IsNullOrEmpty(base.DefaultValue) ? new() : TValue.Parse(base.DefaultValue, null);
+        get => base.DefaultValue is null ? new() : TValue.Parse(base.DefaultValue, null);
         set => base.DefaultValue = value.ToString() ?? throw new NullReferenceException("Value should not be null");
     }
 }

@@ -63,14 +63,14 @@ public abstract class PreferenceValueBase : PreferenceBase
     /// </summary>
     public virtual string Value
     {
-        get => string.IsNullOrEmpty(_value) ? DefaultValue : _value;
+        get => _value is null ? DefaultValue : _value;
         set => SetAndRaise(ref _value, value);
     }
 
     /// <summary>
     /// Get a delegate that given a value will provide the correct summary to display.
     /// </summary>
-    public SummaryProvider SummaryProvider { get; set; } = DefaultSummaryProvider;
+    public SummaryProvider SummaryProvider { get; set; }
 
     public IObservable<PreferenceValueBase> WhenChanged => WhenPropertyChanged
         .Where(x => x.PropertyName is nameof(Value))
@@ -103,7 +103,7 @@ public abstract class PreferenceValueBase : PreferenceBase
 /// </remarks>
 /// <typeparam name="TValue">The type of the value that will be stored.</typeparam>
 public abstract class PreferenceValueBase<TValue> : PreferenceValueBase
-    where TValue : IParsable<TValue>, new()
+    where TValue : notnull, IParsable<TValue>, new()
 {
     /// <summary>
     /// Represents the default value for a Preference.
@@ -111,7 +111,7 @@ public abstract class PreferenceValueBase<TValue> : PreferenceValueBase
     /// The value type depends on the associated Preference.
     /// </summary>
     public new TValue DefaultValue
-        => string.IsNullOrEmpty(base.DefaultValue) ? new() : TValue.Parse(base.DefaultValue, null);
+        => TValue.Parse(base.DefaultValue, null);
 
     /// <summary>
     /// Represents the value for a Preference.
