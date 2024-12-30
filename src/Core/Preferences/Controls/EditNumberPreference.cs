@@ -3,15 +3,7 @@ using Core.Preferences.Builders;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 
-namespace Core.Preferences;
-
-public sealed class EditTextPreference : PreferenceValueBase
-{
-    [SetsRequiredMembers]
-    public EditTextPreference(EditTextPreferenceBuilder builder) : base(builder)
-    {
-    }
-}
+namespace Core.Preferences.Controls;
 
 public sealed class EditNumberPreference<TNumber> : PreferenceValueBase<TNumber> where TNumber : notnull, INumber<TNumber>, new()
 {

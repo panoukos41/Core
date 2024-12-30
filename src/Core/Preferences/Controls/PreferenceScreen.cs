@@ -1,11 +1,10 @@
 ﻿using Core.Preferences.Abstract;
 using Core.Preferences.Builders;
 using Microsoft.Extensions.Configuration;
-using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Linq;
 
-namespace Core.Preferences;
+namespace Core.Preferences.Controls;
 
 public delegate object? IconTransformer(string? icon);
 

@@ -1,7 +1,7 @@
 ﻿using Core.Preferences.Abstract;
 using Core.Preferences.Builders;
 
-namespace Core.Preferences;
+namespace Core.Preferences.Controls;
 
 public sealed class PreferenceCategory : PreferenceCollectionBase
 {

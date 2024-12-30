@@ -1,4 +1,6 @@
-﻿namespace Core.Preferences.Builders;
+﻿using Core.Preferences.Controls;
+
+namespace Core.Preferences.Builders;
 
 public sealed class ListBoxPreferenceBuilder : PreferenceValueBuilderBase
 {

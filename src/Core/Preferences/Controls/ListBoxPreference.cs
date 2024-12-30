@@ -3,7 +3,7 @@ using Core.Preferences.Builders;
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Core.Preferences;
+namespace Core.Preferences.Controls;
 
 public sealed class ListBoxPreference : PreferenceValueBase, IReadOnlyList<string>
 {

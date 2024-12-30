@@ -1,5 +1,6 @@
 ﻿using Core.Reactive;
 using Microsoft.AspNetCore.Components;
+using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Linq;
 
 namespace Core.Abstractions;
@@ -10,7 +11,7 @@ public abstract class CoreRxComponent<TRxObject> : CoreComponent where TRxObject
 
     private TRxObject viewModel = null!;
 
-    [Parameter, EditorRequired]
+    [Parameter, EditorRequired, NotNull]
     public virtual TRxObject ViewModel
     {
         get => viewModel;

@@ -1,8 +1,7 @@
 ﻿using Core.Preferences.Abstract;
 using Core.Preferences.Builders;
-using Microsoft.Extensions.Primitives;
 
-namespace Core.Preferences;
+namespace Core.Preferences.Controls;
 
 public sealed class PagePreference : PreferenceCollectionBase
 {
