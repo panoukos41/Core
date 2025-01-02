@@ -1,0 +1,19 @@
+﻿@using Core.Preferences.Abstract
+
+@inherits Abstract.PreferenceCollectionComponentBase<PreferenceScreen>
+
+<div class="preference-screen">
+    <CascadingValue Value="Root">
+        @foreach (var preference in Root!)
+        {
+            @RenderPreference(preference)
+        }
+    </CascadingValue>
+</div>
+
+@code {
+    protected override void OnParametersSet()
+    {
+        Root = Preference;
+    }
+}

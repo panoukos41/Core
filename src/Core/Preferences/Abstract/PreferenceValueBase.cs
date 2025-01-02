@@ -80,8 +80,6 @@ public abstract class PreferenceValueBase : PreferenceBase
         .Where(x => x.PropertyName is nameof(Value))
         .Select(_ => Value);
 
-    public string ValueSummary => SummaryProvider(Value);
-
     [SetsRequiredMembers]
     protected PreferenceValueBase(PreferenceValueBuilderBase builder) : base(builder)
     {

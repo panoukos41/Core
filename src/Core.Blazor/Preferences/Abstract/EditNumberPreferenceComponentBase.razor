@@ -1,0 +1,37 @@
+﻿@using System.Numerics
+@using Core.Preferences.Controls
+
+@typeparam TNumber where TNumber : notnull, INumber<TNumber>, new()
+@inherits Abstract.PreferenceValueComponentBase<EditNumberPreference<TNumber>>
+
+<div class="preference-control-container preference-number-container">
+    <label for="@Id" class="preference-label preference-number-label">@Title</label>
+    <input id="@Id" class="preference-input preference-number-input" type="number" title="@Title" @bind-value="Value" @oninput="OnChange" @onblur="OnBlur" step="@Preference.Step" min="@Preference.Min" max="@Preference.Max" />
+</div>
+
+@code {
+    private string Title { get; set; } = string.Empty;
+    
+    private TNumber Value { get; set; } = new();
+
+    protected override void OnInitialized()
+    {
+        Title = GetTitle();
+        Value = Preference.Value;
+    }
+
+    private void OnChange(ChangeEventArgs e)
+    {
+        if (TNumber.TryParse(e.Value as string, null, out var newValue) &&
+            (Preference.Min is { } min ? newValue >= min : true) &&
+            (Preference.Max is { } max ? newValue <= max : true))
+        {
+            Preference.Value = newValue;
+        }
+    }
+
+    private void OnBlur(FocusEventArgs e)
+    {
+        Value = Preference.Value;
+    }
+}

@@ -1,0 +1,29 @@
+﻿@inherits Abstract.PreferenceValueComponentBase<ListBoxPreference>
+
+<div class="preference-control-container preference-listbox-container">
+    <label for="@Id" class="preference-label preference-listbox-label">@Title</label>
+    <select id="@Id" class="preference-select preference-listbox-select" title="@Title" value="@Preference.Value" @onchange="OnChange">
+        @foreach (var value in Preference)
+        {
+            var display = GetSummary(value);
+            <option value="@value" class="preference-option preference-listbox-option" title="@display">@display</option>
+        }
+    </select>
+</div>
+
+@code {
+    private string Title { get; set; } = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        Title = GetTitle();
+    }
+
+    private void OnChange(ChangeEventArgs e)
+    {
+        if (e.Value is string arg)
+        {
+            Preference.Value = arg;
+        }
+    }
+}

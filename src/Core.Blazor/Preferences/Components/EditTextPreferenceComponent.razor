@@ -1,0 +1,23 @@
+﻿@inherits Abstract.PreferenceValueComponentBase<EditTextPreference>
+
+<div class="preference-control-container preference-text-container">
+    <label for="@Id" class="preference-label preference-text-label">@Title</label>
+    <input id="@Id" class="preference-input preference-text-input" type="text" title="@Title" value="@Preference.Value" @oninput="OnChange" />
+</div>
+
+@code {
+    private string Title { get; set; } = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        Title = GetTitle();
+    }
+
+    private void OnChange(ChangeEventArgs e)
+    {
+        if (e.Value is string arg)
+        {
+            Preference.Value = arg;
+        }
+    }
+}
