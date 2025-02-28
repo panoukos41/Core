@@ -1,10 +1,9 @@
-﻿using Ignis.Components;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using System.Reactive.Disposables;
 
 namespace Core.Abstractions;
 
-public abstract class CoreComponent : IgnisComponentBase, IComponentWithAttributes, IDisposeWith, IDisposable
+public abstract class CoreComponent : ComponentBase, IComponentWithAttributes, IDisposeWith, IDisposable
 {
     private readonly Lazy<CompositeDisposable> disposables = new(static () => []);
 
@@ -14,9 +13,9 @@ public abstract class CoreComponent : IgnisComponentBase, IComponentWithAttribut
     [Parameter(CaptureUnmatchedValues = true)]
     public IDictionary<string, object?>? Attributes { get; set; }
 
-    public void TriggerUpdate()
+    public void Update()
     {
-        Update();
+        StateHasChanged();
     }
 
     /// <inheritdoc/>

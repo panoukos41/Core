@@ -25,7 +25,7 @@ public abstract class CoreRxComponent<TRxObject> : CoreComponent where TRxObject
             }
             changedSub = viewModel.WhenPropertyChanged
                 .Throttle(TimeSpan.FromMilliseconds(50))
-                .Subscribe(_ => TriggerUpdate())
+                .Subscribe(_ => Update())
                 .DisposeWith(this);
         }
     }

@@ -102,7 +102,7 @@ public abstract class RxInputBase<T> : CoreComponent, IDisposable where T : IPar
         });
     }
 
-    protected override void OnUpdate()
+    protected override void OnParametersSet()
     {
         // If values are not the same this was an update to the [Parameter] so update the control.
         if (!EqualityComparer<T>.Default.Equals(Value, FormControl.Value))
