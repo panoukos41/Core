@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Disposables;
 
 namespace Core.Abstractions;
@@ -8,6 +9,17 @@ public abstract class CoreComponent : ComponentBase, IComponentWithAttributes, I
     private readonly Lazy<CompositeDisposable> disposables = new(static () => []);
 
     protected CompositeDisposable Disposables => disposables.Value;
+
+    /// <summary>
+    /// A unique id for the component.
+    /// </summary>
+    [Parameter]
+    [field: AllowNull]
+    public string Id
+    {
+        get => field ??= Uuid.NewUuid();
+        set => field = value;
+    }
 
     /// <inheritdoc/>
     [Parameter(CaptureUnmatchedValues = true)]

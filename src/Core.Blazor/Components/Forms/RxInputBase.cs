@@ -46,9 +46,6 @@ public abstract class RxInputBase<T> : CoreComponent, IDisposable where T : IPar
     public FormGroup? FormGroup { get; set; }
 
     [Parameter]
-    public string Id { get; set; } = string.Empty;
-
-    [Parameter]
     public string Label { get; set; } = string.Empty;
 
     [Parameter]
