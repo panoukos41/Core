@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using Core.Common;
+using System.Runtime.CompilerServices;
 
 namespace Core.Abstractions;
 
@@ -12,8 +13,27 @@ public static class IComponentWithAttributesMixins
     public static string Class(this IComponentWithAttributes component, string always)
     {
         var componentClass = component.Class();
-
         return componentClass is null ? always : $"{always} {componentClass}";
+    }
+
+    public static string? Class(this IComponentWithAttributes component, ClassLine classLine)
+    {
+        return Bl.Class(classLine); ;
+    }
+
+    public static string Class(this IComponentWithAttributes component, params IEnumerable<ClassLine> classes)
+    {
+        return Bl.Class([component.Class(), .. classes]);
+    }
+
+    public static string Class(this IComponentWithAttributes component, string always, ClassLine classLine)
+    {
+        return component.Class([always, classLine]);
+    }
+
+    public static string Class(this IComponentWithAttributes component, string always, params IEnumerable<ClassLine> classes)
+    {
+        return component.Class([always, .. classes]);
     }
 
     public static bool Disabled(this IComponentWithAttributes component)
