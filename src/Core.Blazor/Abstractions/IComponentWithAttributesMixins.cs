@@ -18,7 +18,7 @@ public static class IComponentWithAttributesMixins
 
     public static string? Class(this IComponentWithAttributes component, ClassLine classLine)
     {
-        return Bl.Class(classLine); ;
+        return Bl.Class([component.Class(), classLine]);
     }
 
     public static string Class(this IComponentWithAttributes component, params IEnumerable<ClassLine> classes)
@@ -39,6 +39,16 @@ public static class IComponentWithAttributesMixins
     public static bool Disabled(this IComponentWithAttributes component)
     {
         return component.TryGetAttribute<bool>("disabled");
+    }
+
+    public static string? Type(this IComponentWithAttributes component)
+    {
+        return component.TryGetAttribute<string>("type");
+    }
+
+    public static string Type(this IComponentWithAttributes component, string @default)
+    {
+        return component.Type() ?? @default;
     }
 
     public static object? TryGetAttribute(this IComponentWithAttributes component, string key)

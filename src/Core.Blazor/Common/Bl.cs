@@ -19,8 +19,7 @@ public static class Bl
         var sb = new StringBuilder();
         foreach (var @class in classes)
         {
-            if (@class.Condition is false)
-                continue;
+            if (@class.Class is null) continue;
 
             sb.Append(@class.ToString());
             sb.Append(' ');

@@ -1,20 +1,17 @@
 ﻿namespace Core.Common;
 
-public readonly ref struct ClassLine
+public readonly struct ClassLine
 {
-    public readonly string Class { get; }
-
-    public readonly bool Condition { get; }
+    public readonly string? Class { get; }
 
     public ClassLine(string @class, bool condition)
     {
-        Class = @class;
-        Condition = condition;
+        Class = condition ? @class : null;
     }
 
     public override string? ToString()
     {
-        return Condition ? Class : null;
+        return Class;
     }
 
     public static implicit operator ClassLine((string Class, bool Condition) tuple)
