@@ -21,10 +21,13 @@ public static class Bl
         {
             if (@class.Class is null) continue;
 
-            sb.Append(@class.ToString());
+            sb.Append(@class.Class);
             sb.Append(' ');
         }
-        sb.Remove(sb.Length - 1, 1);
+        if (sb.Length > 0)
+        {
+            sb.Remove(sb.Length - 1, 1);
+        }
         return sb.ToString();
     }
 
