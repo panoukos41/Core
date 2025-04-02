@@ -253,7 +253,7 @@ public abstract class RxObject :
 
     #region INotify/IReactiveObject/IDispose
 
-    private bool disposed;
+    public bool Disposed { get; private set; }
 
     private readonly Subject<PropertyChanging> changingSubject = new();
     private readonly Subject<PropertyChanged> changedSubject = new();
@@ -280,8 +280,8 @@ public abstract class RxObject :
 
     public virtual void Dispose()
     {
-        if (disposed) return;
-        disposed = true;
+        if (Disposed) return;
+        Disposed = true;
 
         if (disposables.IsValueCreated)
         {

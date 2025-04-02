@@ -17,6 +17,7 @@ public abstract class CoreRxComponent<TRxObject> : CoreComponent where TRxObject
         get => viewModel;
         set {
             viewModel = value;
+            if (viewModel.Disposed) return;
             if (changedSub is { })
             {
                 Disposables.Remove(changedSub);
