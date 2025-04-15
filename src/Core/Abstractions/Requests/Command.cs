@@ -9,7 +9,7 @@ namespace Core.Abstractions.Requests;
 /// Represents a base command.
 /// </summary>
 /// <typeparam name="TResult">The type of the result object.</typeparam>
-public abstract record Command<TResult> : IRequest<Result<TResult>>, IRequestId
+public abstract record Command<TResult> : IRequest<Result<TResult>>
     where TResult : notnull
 {
     [JsonPropertyOrder(0)]
