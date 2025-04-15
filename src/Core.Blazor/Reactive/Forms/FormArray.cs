@@ -1,11 +1,8 @@
 ﻿using Core.Blazor.Reactive.Forms.Abstract;
 using Core.Blazor.Reactive.Forms.Events;
 using Core.Blazor.Reactive.Forms.Primitives;
+using R3;
 using System.Collections;
-using System.Reactive;
-using System.Reactive.Disposables;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
 
 namespace Core.Blazor.Reactive.Forms;
 
@@ -73,7 +70,7 @@ public class FormArray : AbstractControl, IList<AbstractControl>, IReadOnlyColle
     /// <param name="control">The control to be inserted.</param>
     public void Add(AbstractControl control)
     {
-        controls.Add(new(control, this, control.Events.Subscribe(aggregatedEventsSubject)));
+        controls.Add(new(control, this, control.Events.Subscribe(aggregatedEventsSubject.AsObserver())));
         control.Validate();
     }
 
@@ -84,7 +81,7 @@ public class FormArray : AbstractControl, IList<AbstractControl>, IReadOnlyColle
     /// <param name="control">The control to be inserted.</param>
     public void Insert(int index, AbstractControl control)
     {
-        controls.Insert(index, new(control, this, control.Events.Subscribe(aggregatedEventsSubject)));
+        controls.Insert(index, new(control, this, control.Events.Subscribe(aggregatedEventsSubject.AsObserver())));
         control.Validate();
     }
 

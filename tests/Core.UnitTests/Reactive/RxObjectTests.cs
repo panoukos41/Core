@@ -1,15 +1,11 @@
-﻿using DynamicData.Binding;
-using FluentAssertions;
-using System.ComponentModel;
-
-namespace Core.Reactive;
+﻿namespace Core.Reactive;
 
 public sealed class RxObjectTests
 {
     // todo: Break below method to more tests.
     // todo: Move ViewModel tests to Core.UnitTests project
 
-    private class TestObject : RxObject
+    private class TestObject : ObservableObject
     {
         public string firstName = string.Empty;
         public string lastName = string.Empty;

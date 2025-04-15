@@ -1,5 +1,5 @@
-﻿using FluentValidation;
-using Mediator;
+﻿using Blackwing.Contracts.Requests;
+using FluentValidation;
 
 namespace Core.Abstractions.Requests;
 
@@ -7,7 +7,7 @@ namespace Core.Abstractions.Requests;
 /// Represents a query request.
 /// </summary>
 /// <typeparam name="TResult">The type of the result object.</typeparam>
-public abstract record Query<TResult> : IQuery<Result<TResult>> where TResult : notnull
+public abstract record Query<TResult> : IRequest<Result<TResult>> where TResult : notnull
 {
 }
 

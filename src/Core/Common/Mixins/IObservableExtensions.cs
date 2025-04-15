@@ -1,9 +1,10 @@
 ﻿using Core;
+using R3;
 
 namespace System.Reactive.Linq;
 
-public static class IObservableExtensions
+public static class ObservableExtensions
 {
-    public static IObservable<None> ToNone<T>(this IObservable<T> observable)
-        => observable.Select(static _ => None.Value);
+    public static Observable<Nothing> ToNothing<T>(this Observable<T> observable)
+        => observable.Select(static _ => Nothing.Value);
 }

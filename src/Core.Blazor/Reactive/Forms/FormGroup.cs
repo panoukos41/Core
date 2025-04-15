@@ -1,11 +1,9 @@
 ﻿using Core.Blazor.Reactive.Forms.Abstract;
 using Core.Blazor.Reactive.Forms.Events;
 using Core.Blazor.Reactive.Forms.Primitives;
+using R3;
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
-using System.Reactive;
-using System.Reactive.Disposables;
-using System.Reactive.Subjects;
 
 namespace Core.Blazor.Reactive.Forms;
 
@@ -87,7 +85,7 @@ public sealed class FormGroup : AbstractControl, IDictionary<string, AbstractCon
     /// <param name="control">Provides the control for the given id.</param>
     public void Register(string id, AbstractControl control)
     {
-        controls.Add(id, new(control, this, control.Events.Subscribe(aggregatedEventsSubject)));
+        controls.Add(id, new(control, this, control.Events.Subscribe(aggregatedEventsSubject.AsObserver())));
     }
 
     /// <summary>

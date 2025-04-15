@@ -1,8 +1,10 @@
+@using Core.Abstractions
 @using Core.Blazor.Reactive.Forms
 @using Core.Blazor.Reactive.Forms.Abstract
 @using Core.Blazor.Reactive.Forms.Primitives
+@using R3
 
-@inherits Ignis.Components.IgnisComponentBase
+@inherits CoreComponent
 @implements IDisposable
 
 @if (GetErrors() is { Count: > 0 } errors)
@@ -33,9 +35,6 @@
     private IDisposable? sub;
 
     [Parameter]
-    public string? Id { get; set; }
-
-    [Parameter]
     public AbstractControl? Control { get; set; }
 
     [Parameter]
@@ -63,7 +62,7 @@
         return null;
     }
 
-    protected override void OnUpdate()
+    protected override void OnParametersSet()
     {
         if (previousControl == GetControl()) return;
         previousControl = GetControl();
@@ -73,7 +72,7 @@
         sub = previousControl.StatusChanges.Subscribe(_ => Update());
     }
 
-    public void Dispose()
+    protected override void OnDispose()
     {
         sub?.Dispose();
         sub = null;

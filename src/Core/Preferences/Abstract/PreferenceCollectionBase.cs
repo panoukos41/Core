@@ -1,10 +1,8 @@
 ﻿using Core.Preferences.Builders;
+using R3;
 using System.Collections;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
-using System.Reactive.Disposables;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
 
 namespace Core.Preferences.Abstract;
 
@@ -56,32 +54,35 @@ public abstract class PreferenceCollectionBase : PreferenceBase, IReadOnlyCollec
     /// Get notified when a specific preference changes.
     /// </summary>
     /// <param name="key">The key of the preference.</param>
-    public IObservable<PreferenceValueBase> WhenValuePreferenceChanged(string key)
+    public Observable<PreferenceValueBase> WhenValuePreferenceChanged(string key)
         => notifications.Where(args => args.Key == key);
 
     /// <summary>
     /// Get notified when any preference changes and receive it to inspect its values etc.
     /// </summary>
     /// <param name="key">The key of the preference.</param>
-    public IObservable<PreferenceValueBase> WhenAnyPreferenceValueChanged()
+    public Observable<PreferenceValueBase> WhenAnyPreferenceValueChanged()
         => notifications.AsObservable();
 
     protected PreferenceCollectionBase(PreferenceCollectionBuilderBase builder) : base(builder)
     {
-        //var composite = new CompositeDisposable(builder.Preferences.Count);
-        container = builder.Preferences
-            .Select(preference => preference.Build())
-            .Do(preference =>
-            {
-                var disposable = preference switch
+        container = [
+            .. builder.Preferences
+                .Select(preference => preference.Build())
+                .Do(preference =>
                 {
-                    PreferenceValueBase value => value.WhenChanged.Subscribe(notifications)/*.DisposeWith(composite)*/,
-                    PreferenceCollectionBase collection => collection.WhenAnyPreferenceValueChanged().Subscribe(notifications)/*.DisposeWith(composite)*/,
-                    _ => Disposable.Empty,
-                };
-                //composite.Add(disposable);
-            })
-            .ToImmutableArray();
+                    var disposable = preference switch
+                    {
+                        PreferenceValueBase value => value.WhenChanged.Subscribe(notifications.AsObserver()),
+                        PreferenceCollectionBase collection => collection.WhenAnyPreferenceValueChanged().Subscribe(notifications.AsObserver()),
+                        _ => Disposable.Empty,
+                    };
+                    if (disposable != Disposable.Empty)
+                    {
+                        disposable.DisposeWith(this);
+                    }
+                })
+        ];
     }
 
     /// <inheritdoc/>

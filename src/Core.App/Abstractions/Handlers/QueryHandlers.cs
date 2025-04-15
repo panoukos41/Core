@@ -1,9 +1,10 @@
-﻿using Core.Abstractions.Requests;
+﻿using Blackwing.Contracts.Requests;
+using Core.Abstractions.Requests;
 
 namespace Core.Abstractions.Handlers;
 
 public abstract class QueryHandler<TQuery, TResult> :
-    IQueryHandler<TQuery, Result<TResult>>
+    IRequestHandler<TQuery, Result<TResult>>
     where TQuery : Query<TResult>
     where TResult : notnull
 {

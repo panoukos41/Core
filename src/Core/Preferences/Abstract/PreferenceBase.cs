@@ -3,7 +3,7 @@ using Core.Reactive;
 
 namespace Core.Preferences.Abstract;
 
-public abstract class PreferenceBase : RxObject
+public abstract class PreferenceBase : ObservableObject
 {
     /// <summary>
     /// A custom value to be used by platform integrations to represent the Preference icon.

@@ -1,5 +1,5 @@
-﻿using FluentValidation;
-using Mediator;
+﻿using Blackwing.Contracts.Requests;
+using FluentValidation;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 
@@ -9,7 +9,7 @@ namespace Core.Abstractions.Requests;
 /// Represents a base command.
 /// </summary>
 /// <typeparam name="TResult">The type of the result object.</typeparam>
-public abstract record Command<TResult> : ICommand<Result<TResult>>, IRequestId
+public abstract record Command<TResult> : IRequest<Result<TResult>>, IRequestId
     where TResult : notnull
 {
     [JsonPropertyOrder(0)]

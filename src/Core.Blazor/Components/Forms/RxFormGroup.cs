@@ -1,26 +1,13 @@
-﻿using Core.Blazor.Reactive.Forms;
-using Ignis.Components;
+﻿using Core.Abstractions;
+using Core.Blazor.Reactive.Forms;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 
 namespace Core.Components.Forms;
 
-public sealed class RxFormGroup : DynamicComponentBase<RxFormGroup>
+public sealed class RxFormGroup : CoreComponent
 {
     private FormGroup? group;
-
-    public RxFormGroup() : this(typeof(Fragment))
-    {
-        SetAttributes([]);
-    }
-
-    public RxFormGroup(string asElement) : base(asElement)
-    {
-    }
-
-    public RxFormGroup(Type asComponent) : base(asComponent)
-    {
-    }
 
     [Parameter]
     public FormGroup? FormGroup { get; set; }
@@ -43,10 +30,11 @@ public sealed class RxFormGroup : DynamicComponentBase<RxFormGroup>
         builder.AddAttribute(2, nameof(CascadingValue<FormGroup>.Value), group);
         builder.AddAttribute(3, nameof(CascadingValue<FormGroup>.ChildContent), (RenderFragment)(builder =>
         {
-            builder.OpenAs(4, this);
+
+            //builder.OpenAs(4, this);
             builder.AddMultipleAttributes(5, Attributes!);
-            builder.AddChildContentFor(6, this, ChildContent);
-            builder.CloseAs(this);
+            //builder.AddChildContentFor(6, this, ChildContent);
+            //builder.CloseAs(this);
         }));
         builder.CloseComponent();
     }

@@ -1,9 +1,8 @@
 ﻿using Core.Blazor.Reactive.Forms.Events;
 using Core.Blazor.Reactive.Forms.Primitives;
+using R3;
 using System.Diagnostics.CodeAnalysis;
-using System.Reactive;
 using System.Reactive.Linq;
-using System.Reactive.Subjects;
 
 namespace Core.Blazor.Reactive.Forms.Abstract;
 
@@ -28,8 +27,8 @@ public abstract class AbstractControl : IDisposable
     protected AbstractControl()
     {
         Events = eventsSubject.AsObservable();
-        StatusChanges = Events.OfType<StatusChangeEvent>();
-        ValueChanges = Events.OfType<ValueChangeEvent>();
+        StatusChanges = Events.OfType<ControlEvent, StatusChangeEvent>();
+        ValueChanges = Events.OfType<ControlEvent, ValueChangeEvent>();
 
         _validators = new(static () => []);
         _validatorsAsync = new(static () => []);
@@ -151,19 +150,19 @@ public abstract class AbstractControl : IDisposable
     /// Subscribe to the 'events' of the parent control instead.
     /// For other event types, the events are emitted after the parent control has been updated.
     /// </remarks>
-    public IObservable<ControlEvent> Events { get; }
+    public Observable<ControlEvent> Events { get; }
 
     /// <summary>
     /// A multicasting observable that emits an event every time the validation 'status' of the control recalculates.
     /// </summary>
-    public IObservable<StatusChangeEvent> StatusChanges { get; }
+    public Observable<StatusChangeEvent> StatusChanges { get; }
 
     /// <summary>
     /// A multicasting observable that emits an event every time the value of the control changes, in 
     /// the UI or programmatically.It also emits an event each time you call enable() or disable()
     /// without passing along {emitEvent: false} as a function argument.
     /// </summary>
-    public IObservable<ValueChangeEvent> ValueChanges { get; }
+    public Observable<ValueChangeEvent> ValueChanges { get; }
 
     public bool Is<T>([NotNullWhen(true)] out AbstractControl<T>? control)
     {
@@ -393,12 +392,14 @@ public abstract class AbstractControl : IDisposable
             ? Observable.Return<IValidationError?>(null)
             : _validatorsAsync.Value
             .ToObservable()
-            .SelectMany((validator) => Observable.FromAsync(cancelation => validator(this, cancelation).AsTask()));
+            .SelectMany((validator) => Observable.FromAsync(cancelation => validator(this, cancelation)));
+
+        var merged = Observable
+            .Merge(syncValidators, asyncValidators)
+            .WhereNotNull();
 
         return Observable
-            .Merge(syncValidators, asyncValidators)
-            .WhereNotNull()
-            .ToArray()
+            .FromAsync(ct => new ValueTask<IValidationError[]>(merged.ToArrayAsync(ct)))
             .Subscribe(errors =>
             {
                 if (errors?.Length is > 0)
@@ -531,18 +532,18 @@ public abstract class AbstractControl<T> : AbstractControl, IDisposable
 {
     private T? _value;
 
-    public new IObservable<ValueChangeEvent<T>> ValueChanges { get; }
+    public new Observable<ValueChangeEvent<T>> ValueChanges { get; }
 
     /// <inheritdoc/>
     protected AbstractControl()
     {
-        ValueChanges = eventsSubject.OfType<ValueChangeEvent<T>>();
+        ValueChanges = Events.OfType<ControlEvent, ValueChangeEvent<T>>();
     }
 
     /// <inheritdoc/>
     protected AbstractControl(IEnumerable<ValidatorFn>? sync = null, IEnumerable<ValidatorFnAsync>? async = null) : base(sync, async)
     {
-        ValueChanges = eventsSubject.OfType<ValueChangeEvent<T>>();
+        ValueChanges = Events.OfType<ControlEvent, ValueChangeEvent<T>>();
     }
 
     public override object? RawValue => Value;

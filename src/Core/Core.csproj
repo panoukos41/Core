@@ -7,12 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Blackwing.Contracts" />
     <PackageReference Include="Dunet" />
     <PackageReference Include="FluentValidation" />
-    <PackageReference Include="Mediator.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.Configuration" />
+    <PackageReference Include="R3" />
     <PackageReference Include="Serilog" />
-    <PackageReference Include="System.Reactive" />
   </ItemGroup>
 
 </Project>

@@ -1,4 +1,6 @@
-﻿namespace Core.Reactive;
+﻿using R3;
+
+namespace Core.Reactive;
 
 /// <summary>
 /// Notifies clients that a property is changing.
@@ -8,5 +10,5 @@ public interface IWhenPropertyChanging
     /// <summary>
     /// Observable that ticks when a property is changing.
     /// </summary>
-    public IObservable<PropertyChanging> WhenPropertyChanging { get; }
+    public Observable<PropertyChanging> WhenPropertyChanging { get; }
 }

@@ -1,6 +1,6 @@
 ﻿using Core.Preferences.Builders;
+using R3;
 using System.Diagnostics.CodeAnalysis;
-using System.Reactive.Linq;
 
 namespace Core.Preferences.Abstract;
 
@@ -72,11 +72,11 @@ public abstract class PreferenceValueBase : PreferenceBase
     /// </summary>
     public SummaryProvider SummaryProvider { get; set; }
 
-    public IObservable<PreferenceValueBase> WhenChanged => WhenPropertyChanged
+    public Observable<PreferenceValueBase> WhenChanged => WhenPropertyChanged
         .Where(x => x.PropertyName is nameof(Value))
         .Select(_ => this);
 
-    public IObservable<string> WhenValueChanged => WhenPropertyChanged
+    public Observable<string> WhenValueChanged => WhenPropertyChanged
         .Where(x => x.PropertyName is nameof(Value))
         .Select(_ => Value);
 

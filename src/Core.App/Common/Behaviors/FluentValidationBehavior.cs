@@ -1,10 +1,11 @@
-﻿using FluentValidation;
+﻿using Blackwing.Contracts.Requests;
+using FluentValidation;
 using FluentValidation.Results;
 
 namespace Core.Common.Behaviors;
 
-public sealed class FluentValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
-    where TRequest : IMessage
+public sealed class FluentValidationBehavior<TRequest, TResponse> : IRequestPipeline<TRequest, TResponse>
+    where TRequest : IRequest
     where TResponse : IResultUnion
 {
     private readonly IEnumerable<IValidator<TRequest>>? validators;
@@ -14,7 +15,7 @@ public sealed class FluentValidationBehavior<TRequest, TResponse> : IPipelineBeh
         this.validators = validators;
     }
 
-    public async ValueTask<TResponse> Handle(TRequest request, CancellationToken cancellationToken, MessageHandlerDelegate<TRequest, TResponse> next)
+    public async ValueTask<TResponse> Handle(TRequest request, IRequestPipelineDelegate<TRequest, TResponse> next, CancellationToken cancellationToken = default)
     {
         if (validators is not null)
         {

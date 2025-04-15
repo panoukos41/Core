@@ -1,9 +1,10 @@
-﻿using Core.Abstractions.Requests;
+﻿using Blackwing.Contracts.Requests;
+using Core.Abstractions.Requests;
 
 namespace Core.Abstractions.Handlers;
 
 public abstract class CommandHandler<TCommand, TResult> :
-    ICommandHandler<TCommand, Result<TResult>>
+    IRequestHandler<TCommand, Result<TResult>>
     where TCommand : Command<TResult>
     where TResult : notnull
 {

@@ -1,8 +1,8 @@
 ﻿using Core.Preferences.Abstract;
 using Core.Preferences.Builders;
 using Microsoft.Extensions.Configuration;
+using R3;
 using System.Diagnostics.CodeAnalysis;
-using System.Reactive.Linq;
 
 namespace Core.Preferences.Controls;
 

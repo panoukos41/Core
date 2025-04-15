@@ -1,8 +1,8 @@
-﻿namespace System.Reactive.Linq;
+﻿namespace R3;
 
 internal static class IObservableExtensions
 {
-    public static IObservable<T> WhereNotNull<T>(this IObservable<T?> observable)
+    public static Observable<T> WhereNotNull<T>(this Observable<T?> observable)
     {
         return observable.Where(static x => x is { })!;
     }
